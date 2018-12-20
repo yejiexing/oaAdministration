@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html ng-app="Finance">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title></title>
+
+    <link href="../../css/bootstrap.min.css?t=20180208" rel="stylesheet">
+    <link href="../../css/font-awesome.min.css?t=20180208" rel="stylesheet">
+    <link href="../../css/plugins/bootstrap-table/bootstrap-table.min.css?t=20180208" rel="stylesheet">
+    <link href="../../css/animate.min.css?t=20180208" rel="stylesheet">
+    <link href="../../css/style.min.css?t=20180208" rel="stylesheet">
+
+    <base target="_blank">
+    <style>
+        .bg-color {
+            background: rgb(223, 240, 216) !important;
+        }
+
+        .modal-body {
+            max-height: 300px;
+            min-height: 300px;
+            overflow-x: hidden
+        }
+
+        .form-horizontal .form-group {
+            margin-bottom: 8px;
+        }
+
+        .form-horizontal .control-label,
+        .form-group>div {
+            padding-left: 0;
+            padding-right: 0;
+        }
+
+        .datepicker.dropdown-menu {
+            z-index: 10000 !important;
+        }
+
+        .col-sm-2 {
+            padding-right: 0;
+        }
+
+        .col-sm-2 select {
+            width: -webkit-fill-available !important;
+        }
+
+        .Proportion {
+            position: absolute;
+            top: 9px;
+            right: 4px;
+        }
+
+        .modal-body h1 {
+            text-align: center;
+            margin-top: -5px;
+            font-size: 20px;
+        }
+
+        .modal-body table {
+            margin: 0 auto;
+        }
+
+        .modal-body tr td {
+            padding: 8px;
+        }
+
+        .modal-body tr td:nth-child(1) {
+            text-align: right;
+        }
+
+        #showmenu {
+            background-color: #888888;
+            padding: 5px 10px;
+            cursor: pointer;
+            color: #fff;
+        }
+
+        .caret {
+            position: absolute;
+            top: 16px;
+            right: 7px;
+        }
+        .ibox-Mask{
+            display: inline-block;
+        }
+    </style>
+
+</head>
+
+<body class="gray-bg" ng-controller="FinanceCtrl">
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <!-- Panel Other -->
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>财务查询</h5>
+                <div class="ibox-tools">
+                    <a class="collapse-link">
+                        <i class="fa fa-chevron-up"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="ibox-content">
+                <div class="base-margin" id="query">
+                    <form class="form-inline" role="form" method="post" id="queryForm" style="padding: 0 15px">
+                        <div class="row">
+                            <div class="row-block">
+                                <button class="btn btn-white pull-left" type="button" ng-click="doQuery()"><i class="fa fa-refresh"></i></button>
+                                <div class="input-group select_date select_w110" ng-show="index">
+                                    <input type="text" class="form-control demo-input" ng-model="Newdate1" id="date1" disabled>
+                                    <span class="input-group-addon dateclick">
+                                        <i class="fa fa-calendar dateicon" id="date_1"></i>
+                                    </span>
+                                </div>
+                                <span class="pull-left spanm" ng-if="index">至</span>
+                                <div class="input-group select_date select_w110" ng-show="index">
+                                    <input type="text" class="form-control demo-input" ng-model="Newdate2" id="date2" disabled>
+                                    <span class="input-group-addon dateclick">
+                                        <i class="fa fa-calendar dateicon" id="date_2"></i>
+                                    </span>
+                                </div>
+                                <span class="pull-left spanm" ng-if="index">开票月份:</span>
+                                <div class="input-group select_date select_w110" ng-show="index">
+                                    <input type="text" class="form-control demo-input" ng-model="Newdate3" id="date3" disabled>
+                                    <span class="input-group-addon dateclick">
+                                        <i class="fa fa-calendar dateicon" id="date_3"></i>
+                                    </span>
+                                </div>
+                                <div class="dropdown select_input select_w130" ng-show="index" id="dropdown-channel">
+                                    <input type="text" class="form-control input-s" ng-model="select.project" placeholder="-选择项目-" style="width:100%" data-id="dropdown-channel">
+                                    <span class="caret1" ng-click="searchFun('dropdown-channel')">
+                                        <i class="fa fa-sort-desc"></i>
+                                    </span>
+                                    <ul class="dropdown-menu select_ul w130">
+                                        <li ng-repeat="item in ChannelList track by $index" ng-show="select.project === '' || item.includes(select.project) || !select.C_status"
+                                            ng-click="setSelect('project',item)">
+                                            <a title="{{item}}">{{item}}</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="dropdown select_input select_w130" ng-show="index" id="dropdown-company">
+                                    <input type="text" class="form-control input-s" ng-model="select.product" placeholder="-选择产品-" style="width:100%" data-id="dropdown-company">
+                                    <span class="caret1" ng-click="searchFun('dropdown-company')">
+                                        <i class="fa fa-sort-desc"></i>
+                                    </span>
+                                    <ul class="dropdown-menu select_ul w130">
+                                        <li ng-repeat="item in CompanyList track by $index" ng-show="select.product === '' || item.includes(select.product) || !select.C_status"
+                                            ng-click="setSelect('product',item)">
+                                            <a title="{{item}}">{{item}}</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="dropdown select_input select_w130" ng-show="index" id="dropdown-region">
+                                    <input type="text" class="form-control input-s" ng-model="select.closing_unit" placeholder="-结算单位明细-" style="width:100%"
+                                        data-id="dropdown-region">
+                                    <span class="caret1" ng-click="searchFun('dropdown-region')">
+                                        <i class="fa fa-sort-desc"></i>
+                                    </span>
+                                    <ul class="dropdown-menu select_ul w130">
+                                        <li ng-repeat="item in closingUnit track by $index" ng-show="select.closing_unit === '' || item.includes(select.closing_unit) || !select.C_status"
+                                            ng-click="setSelect('closing_unit',item)">
+                                            <a title="{{item}}">{{item}}</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="dropdown select_input select_w130" ng-show="index" id="dropdown-user">
+                                    <input type="text" class="form-control input-s" ng-model="select.company_name" placeholder="-选择单位名称-" style="width:100%"
+                                        data-id="dropdown-user">
+                                    <span class="caret1" ng-click="searchFun('dropdown-user')">
+                                        <i class="fa fa-sort-desc"></i>
+                                    </span>
+                                    <ul class="dropdown-menu select_ul w130">
+                                        <li ng-repeat="item in companyName track by $index" ng-show="select.company_name === '' || item.includes(select.company_name) || !select.C_status"
+                                            ng-click="setSelect('company_name',item)">
+                                            <a title="{{item}}">{{item}}</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="dropdown select_input select_w130" ng-show="index" id="dropdown-issue">
+                                    <input type="text" class="form-control input-s" ng-model="select.issue_name" placeholder="-选择发行主体-" style="width:100%" data-id="dropdown-issue">
+                                    <span class="caret1" ng-click="searchFun('dropdown-issue')">
+                                        <i class="fa fa-sort-desc"></i>
+                                    </span>
+                                    <ul class="dropdown-menu select_ul w130">
+                                        <li ng-repeat="item in issueName track by $index" ng-show="select.issue_name === '' || item.includes(select.issue_name) || !select.C_status"
+                                            ng-click="setSelect('issue_name',item)">
+                                            <a title="{{item}}">{{item}}</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <button class="btn btn-success pull-left ml10" type="button" ng-click="search()" ng-if="index"><i class="fa fa-search"></i> 搜索</button> &nbsp;
+                            </div>
+                            <div class="row-block" ng-if="index">
+                                <button class="btn btn-white" type="button" ng-class="{'active':status.all}" ng-click="buttonFun('all')">全部状态</button>
+                                <div class="btn-group pl0">
+                                    <button class="btn btn-white" type="button" ng-class="{'active':status.statement == 1}" ng-click="buttonFun('statement',1)">有对账单</button>
+                                    <button class="btn btn-white" type="button" ng-class="{'active':status.statement === 0}" ng-click="buttonFun('statement',0)">无对账单</button>
+                                </div>
+                                <div class="btn-group pl0">
+                                    <button class="btn btn-white" type="button" ng-class="{'active':status.bill == 1}" ng-click="buttonFun('bill',1)">已开票</button>
+                                    <button class="btn btn-white" type="button" ng-class="{'active':status.bill === 0}" ng-click="buttonFun('bill',0)">未开票</button>
+                                </div>
+                                <div class="btn-group pl0">
+                                    <button class="btn btn-white" type="button" ng-class="{'active':status.receive == 1}" ng-click="buttonFun('receive',1)">已收款</button>
+                                    <button class="btn btn-white" type="button" ng-class="{'active':status.receive === 0}" ng-click="buttonFun('receive',0)">未收款</button>
+                                </div>
+                            </div>
+                            <div class="pull-right" style="margin-right: 16px">
+                                <button class="btn btn-danger" type="button" ng-click="Toupdate('updatedata')" ng-if="updatedata">更新</button>
+                                <button class="btn btn-white" type="button" ng-click="iconFun('')" ng-if="imports"><i class="fa fa-upload"></i> 上传</button>
+                                <!-- <button class="btn btn-danger" type="button" ng-click="Toupdate('updateAcyclicData')">更新非周期数据</button>
+                                <button class="btn btn-white" type="button" ng-click="iconFun('Acyclic')"><i class="fa fa-upload"></i> 上传非周期数据</button> -->
+                                <button class="btn btn-white" type="button" ng-click="export()" ng-if="isexport"><i class="fa fa-download"></i> 下载</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="container" style="width: 100%" ng-class="{true: 'rablehide2 rablehide1', false: 'rablehide1 Codetable2'}[ispc]">
+                    <table id="demo-table">
+                        <thead>
+                            <tr ng-click="tab()">
+                                <th data-field="month" data-formatter="smaller">月份</th>
+                                <th data-field="product_name" data-formatter="smaller">产品名称</th>
+                                <th data-field="start_date" data-formatter="smaller">开始时间</th>
+                                <th data-field="end_date" data-formatter="smaller">结束时间</th>
+                                <th data-field="product_name" data-formatter="smaller">产品名称</th>
+                                <th data-field="project_name" data-formatter="smaller">项目名称</th>
+                                <th data-field="product_name" data-formatter="smaller">产品名称</th>
+                                <th data-field="income_type">收入类型</th>
+                                <th data-field="closing_unit">结算单位</th>
+                                <th data-field="recharge_amount">充值金额</th>
+                                <th data-field="divide_amount">分成金额</th>
+                                <th data-field="statement_recharge_amount">对账单流水金额</th>
+                                <th data-field="confirm_amount" data-formatter="amountDate" data-events="finaceFun">确认金额</th>
+                                <th data-field="bill_date" data-formatter="smaller">出账单日</th>
+                                <th data-field="bill_status" data-formatter="billDate" data-events="finaceFun">已开票</th>
+                                <th data-field="receive_bill_date" data-formatter="smaller">收票时间</th>
+                                <th data-field="expected_back_date">预计回款时间</th>
+                                <th data-field="receive_amount_status" data-formatter="receiveDate" data-events="finaceFun">已收款</th>
+                                <th data-field="pay_amount_status">已付款</th>
+                                <th data-field="company_name" data-formatter="companyDate">单位名称</th>
+                                <th data-field="issue_name" data-formatter="smaller">发行主体</th>
+                                <th data-field="difference_rate">差额比</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!--添加修改弹出层-->
+        <!--弹出对账单层-->
+        <div class="modal fade" id="preservaModal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div ng-include="'manage/modals/statement_alert.html'"></div>
+        </div>
+        <!--弹出开票层-->
+        <div class="modal fade" id="preservaModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div ng-include="'manage/modals/bill_alert.html'"></div>
+        </div>
+        <!--弹出收款层-->
+        <div class="modal fade" id="preservaModal3" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div ng-include="'manage/modals/receipt_alert.html'"></div>
+        </div>
+        <div class="modal inmodal" id="table_success" data-backdrop="static" tabindex="-1" role="dialog" aria-hidden="false">
+            <div ng-include="'../success.html'"></div>
+        </div>
+        <!--导入弹出层-->
+        <div class="modal fade" id="icon" tabindex="-1" role="dialog" aria-labelledby="iconLabel" data-backdrop="static">
+            <div class="modal-dialog modal-sm" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title">选择Excel文件</h4>
+                    </div>
+                    <div class="modal-body" style="min-height:initial">
+                        <div class="form-group">
+                            <input id="iconFile" type="file" onchange="angular.element(this).scope().checkFile(this.files[0])">
+                        </div>
+                        <div class="sk-spinner sk-spinner-wave" ng-show="uploading">
+                            <div class="sk-rect1"></div>
+                            <div class="sk-rect2"></div>
+                            <div class="sk-rect3"></div>
+                            <div class="sk-rect4"></div>
+                            <div class="sk-rect5"></div>
+                        </div>
+                        <button type="button" class="btn btn-xs btn-success" ng-click="dome()">下载模板</button>
+                        <button type="button" class="btn btn-xs btn-warning" ng-click="downloadError()" ng-if="errorUrl">下载未导入数据</button>
+                    </div>
+                    <div class="modal-footer">
+                        <span class="text-danger" ng-bind="usersError"></span>&nbsp;&nbsp;
+                        <button type="button" class="btn btn-success" ng-disabled="usersError !== '' || uploading" ng-click="import()">导入</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End Panel Other -->
+    </div>
+    <script src="../../js/jquery.min.js?t=20180208"></script>
+    <script src="../../js/bootstrap.min.js?t=20180208"></script>
+    <script src="../../js/content.min.js?t=20180208"></script>
+    <script src="../../js/plugins/bootstrap-table/bootstrap-table.min.js?t=20180208"></script>
+    <script src="../../js/plugins/bootstrap-table/bootstrap-table-fixed-columns.js?t=20180208"></script>
+    <script src="../../js/plugins/bootstrap-table/bootstrap-table-mobile.min.js?t=20180208"></script>
+    <script src="../../js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js?t=20180208"></script>
+    <script src="../../js/plugins/angular/angular.min.js?t=20180208"></script>
+    <script src="../../js/controller/finance/finance.js?t=20180208"></script>
+    <script src="../../js/plugins/print/print.min.js?t=20180208"></script>
+    <script src="../../js/plugins/fileSaver/fileSaver.min.js?t=20180208"></script>
+    <script src="../../js/plugins/wordExport/wordExport.js?t=20180208"></script>
+    <!--日历插件-->
+    <script src="../../js/plugins/laydate/laydate.js?t=20180208"></script>
+</body>
+
+</html>

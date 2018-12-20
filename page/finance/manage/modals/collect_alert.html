@@ -1,0 +1,54 @@
+<style>
+    .modal-body table {
+        margin: 0 auto;
+    }
+
+    .modal-body tr td {
+        padding: 8px;
+    }
+
+    .modal-body tr td:nth-child(1) {
+        text-align: right;
+    }
+
+    .modal-body {
+        min-height: initial;
+        max-height: 300px;
+        overflow-x: hidden;
+    }
+
+    .modal-body h1 {
+        text-align: center;
+        margin-top: -5px;
+        font-size: 20px;
+    }
+
+    #showmenu {
+        background-color: #888888;
+        padding: 5px 10px;
+        cursor: pointer;
+        color: #fff;
+    }
+</style>
+<div class="modal-dialog modal-sm">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">
+                <span aria-hidden="true">&times;</span>
+                <span class="sr-only">Close</span>
+            </button>
+            <h4 class="modal-title">添加实际收票时间</h4>
+        </div>
+        <div class="modal-body">
+            <div class="input-group select_date" style="width: auto !important">
+                <input type="text" class="form-control demo-input text-center" ng-model="updateReceiveMoneyDate.date" id="collectTime" disabled>
+                <span class="input-group-addon dateclick">
+                    <i class="fa fa-calendar dateicon" id="collect_time"></i>
+                </span>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-success" ng-click="collectConfirm()">添加</button>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,70 @@
+<style>
+    .modal-body table {
+        margin: 0 auto;
+    }
+
+    .modal-body tr td {
+        padding: 8px;
+    }
+
+    .modal-body tr td:nth-child(1) {
+        text-align: right;
+    }
+
+    .modal-body {
+        min-height: initial;
+        max-height: 300px;
+        overflow-x: hidden;
+    }
+
+    .modal-body h1 {
+        text-align: center;
+        margin-top: -5px;
+        font-size: 20px;
+    }
+
+    #showmenu {
+        background-color: #888888;
+        padding: 5px 10px;
+        cursor: pointer;
+        color: #fff;
+    }
+
+</style>
+<div class="modal-dialog modal-sm">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">
+                <span aria-hidden="true">&times;</span>
+                <span class="sr-only">Close</span>
+            </button>
+            <h4 class="modal-title">{{ collectTitle }}</h4>
+        </div>
+        <div class="modal-body">
+            <div class="input-group" style="width: 100%;" ng-if="collectTitle === '发票编号'">
+                <input type="text" class="form-control" ng-model="collectData[collect]">
+            </div>
+            <div class="input-group select_date" style="width: auto !important" ng-if="collectTitle.includes('时间')">
+                <input type="text" class="form-control demo-input text-center" ng-model="collectData[collect]" id="collectTime" disabled>
+                <span class="input-group-addon dateclick">
+                    <i class="fa fa-calendar dateicon" id="collect_time"></i>
+                </span>
+            </div>
+            <div class="input-group" style="width: 100%;" ng-if="collectTitle === '结算主体'">
+                <select class="form-control" ng-model="collectData[collect]">
+                    <option value="">-选择结算主体-</option>
+                    <option ng-repeat="item in modalUnit track by $index" value="{{item.id}}" title="{{item.name}}">{{item.name}}</option>
+                </select>
+            </div>
+            <div class="input-group" style="width: 100%;" ng-if="collectTitle === '发行主体'">
+                <select class="form-control" ng-model="collectData[collect]">
+                    <option value="">-选择发行主体-</option>
+                    <option ng-repeat="item in modalUnit track by $index" value="{{item.id}}" title="{{item.name}}">{{item.name}}</option>
+                </select>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-success" ng-click="collectConfirm()">添加</button>
+        </div>
+    </div>
+</div>

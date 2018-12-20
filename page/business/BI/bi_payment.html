@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html ng-app="biPayment">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title></title>
+
+    <link href="../../../css/bootstrap.min.css?t=20180208" rel="stylesheet">
+    <link href="../../../css/font-awesome.min.css?t=20180208" rel="stylesheet">
+    <link href="../../../css/plugins/bootstrap-table/bootstrap-table.min.css?t=20180208" rel="stylesheet">
+    <link href="../../../css/animate.min.css?t=20180208" rel="stylesheet">
+    <link href="../../../css/style.min.css?t=20180208" rel="stylesheet">
+
+    <base target="_blank">
+    <style>
+        .bg-color {
+            background: rgb(223, 240, 216) !important;
+        }
+
+        .modal-body {
+            max-height: 300px;
+            min-height: 300px;
+            overflow-x: hidden
+        }
+
+        .form-horizontal .form-group {
+            margin-bottom: 8px;
+        }
+
+        .form-horizontal .control-label,
+        .form-group>div {
+            padding-left: 0;
+            padding-right: 0;
+        }
+
+        .datepicker.dropdown-menu {
+            z-index: 10000 !important;
+        }
+
+        .col-sm-2 {
+            padding-right: 0;
+        }
+
+        .col-sm-2 select {
+            width: -webkit-fill-available !important;
+        }
+
+        .Proportion {
+            position: absolute;
+            top: 9px;
+            right: 4px;
+        }
+
+        .modal-body h1 {
+            text-align: center;
+            margin-top: -5px;
+            font-size: 20px;
+        }
+
+        .modal-body table {
+            margin: 0 auto;
+        }
+
+        .modal-body tr td {
+            padding: 8px;
+        }
+
+        .modal-body tr td:nth-child(1) {
+            text-align: right;
+        }
+
+        #showmenu {
+            background-color: #888888;
+            padding: 5px 10px;
+            cursor: pointer;
+            color: #fff;
+        }
+
+        .caret {
+            position: absolute;
+            top: 16px;
+            right: 7px;
+        }
+    </style>
+</head>
+
+<body class="gray-bg" ng-controller="biPaymentCtrl">
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <!-- Panel Other -->
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>支付数据</h5>
+                <div class="ibox-tools">
+                    <a class="collapse-link">
+                        <i class="fa fa-chevron-up"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="ibox-content">
+                <div class="base-margin" id="query">
+                    <form class="form-inline" role="form" method="post" id="queryForm" style="padding: 0 15px">
+                        <div class="row">
+                            <div class="row-block">
+                                <button class="btn btn-white pull-left" type="button" ng-click="doQuery('')">
+                                    <i class="fa fa-refresh"></i> 刷新</button>
+                                <div class="input-group select_date" ng-show="index">
+                                    <input type="text" class="form-control demo-input" ng-model="Newdate1" id="date1" disabled>
+                                    <span class="input-group-addon dateclick">
+                                        <i class="fa fa-calendar dateicon" id="date_1"></i>
+                                    </span>
+                                </div>
+                                <div class="input-group select_date" ng-show="index">
+                                    <input type="text" class="form-control demo-input" ng-model="Newdate2" id="date2" disabled>
+                                    <span class="input-group-addon dateclick">
+                                        <i class="fa fa-calendar dateicon" id="date_2"></i>
+                                    </span>
+                                </div>
+                                <div class="input-group select_input" ng-if="index">
+                                    <input type="text" class="form-control" ng-model="select.user" placeholder="账号">
+                                </div>
+                                <div class="input-group select_input" ng-if="index">
+                                    <select class="form-control" ng-model="select.Game" style="width: 100%">
+                                        <option value="">-选择游戏-</option>
+                                        <option ng-repeat="(k,i) in GameList track by $index" value="{{k}}">{{i}}</option>
+                                    </select>
+                                </div>
+                                <div class="input-group select_input" ng-if="index">
+                                    <select class="form-control" ng-model="select.Channel" style="width: 100%">
+                                        <option value="">-选择渠道-</option>
+                                        <option ng-repeat="(k,i) in ChannelList track by $index" value="{{k}}">{{i}}</option>
+                                    </select>
+                                </div>
+                                <button class="btn btn-success pull-left ml10" type="button" ng-click="search()" ng-if="index">
+                                    <i class="fa fa-search"></i> 搜索</button> &nbsp;
+                            </div>
+                            <div class="pull-right edit-button">
+                                <button class="btn btn-white" type="button" ng-click="export()" ng-if="isexport"><i class="fa fa-download"></i> 下载</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="container" style="width: 100%">
+                    <table id="demo-table">
+                        <thead>
+                        <tr ng-click="tab()">
+                            <th data-field="game">游戏</th>
+                            <th data-field="channel">渠道</th>
+                            <th data-field="username">账号</th>
+                            <th data-field="pay_money">充值金额</th>
+                            <th data-field="created_at">新增日期</th>
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>激活数据</h5>
+                <div class="ibox-tools">
+                    <a class="collapse-link">
+                        <i class="fa fa-chevron-up"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="ibox-content">
+                <div class="base-margin" id="query1">
+                    <form class="form-inline" role="form" method="post" id="queryForm1" style="padding: 0 15px">
+                        <div class="row">
+                            <div class="row-block">
+                                <button class="btn btn-white pull-left" type="button" ng-click="doQuery(1)">
+                                    <i class="fa fa-refresh"></i> 刷新</button>
+                                <div class="input-group select_date" ng-show="read">
+                                    <input type="text" class="form-control demo-input" ng-model="Newdate3" id="date3" disabled>
+                                    <span class="input-group-addon dateclick">
+                                        <i class="fa fa-calendar dateicon" id="date_3"></i>
+                                    </span>
+                                </div>
+                                <div class="input-group select_date" ng-show="read">
+                                    <input type="text" class="form-control demo-input" ng-model="Newdate4" id="date4" disabled>
+                                    <span class="input-group-addon dateclick">
+                                        <i class="fa fa-calendar dateicon" id="date_4"></i>
+                                    </span>
+                                </div>
+                                <!--<div class="input-group select_input" ng-if="read">-->
+                                    <!--<input type="text" class="form-control" ng-model="select.user" placeholder="账号">-->
+                                <!--</div>-->
+                                <div class="input-group select_input" ng-if="read">
+                                    <select class="form-control" ng-model="select.Game1" style="width: 100%">
+                                        <option value="">-选择游戏-</option>
+                                        <option ng-repeat="(k,i) in GameList track by $index" value="{{k}}">{{i}}</option>
+                                    </select>
+                                </div>
+                                <div class="input-group select_input" ng-if="read">
+                                    <select class="form-control" ng-model="select.Channel1" style="width: 100%">
+                                        <option value="">-选择渠道-</option>
+                                        <option ng-repeat="(k,i) in ChannelList track by $index" value="{{k}}">{{i}}</option>
+                                    </select>
+                                </div>
+                                <button class="btn btn-success pull-left ml10" type="button" ng-click="search(1)" ng-if="read">
+                                    <i class="fa fa-search"></i> 搜索</button> &nbsp;
+                            </div>
+                            <div class="pull-right edit-button">
+                                <button class="btn btn-white" type="button" ng-click="export(1)" ng-if="state"><i class="fa fa-download"></i> 下载</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="container" style="width: 100%">
+                    <table id="demo-table1">
+                        <thead>
+                        <tr ng-click="tab()">
+                            <th data-field="id">激活id</th>
+                            <th data-field="game">游戏</th>
+                            <th data-field="channel">渠道</th>
+                            <th data-field="device_id">设备IDFA</th>
+                            <th data-field="device_type">设备类型</th>
+                            <th data-field="created_at">创建时间</th>
+                            <th data-field="updated_at">更新时间</th>
+                            <th data-field="ip">请求IP</th>
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../../../js/jquery.min.js?t=20180208"></script>
+    <script src="../../../js/bootstrap.min.js?t=20180208"></script>
+    <script src="../../../js/content.min.js?t=20180208"></script>
+    <script src="../../../js/plugins/bootstrap-table/bootstrap-table.min.js?t=20180208"></script>
+    <script src="../../../js/plugins/bootstrap-table/bootstrap-table-fixed-columns.js?t=20180208"></script>
+    <script src="../../../js/plugins/bootstrap-table/bootstrap-table-mobile.min.js?t=20180208"></script>
+    <script src="../../../js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js?t=20180208"></script>
+    <script src="../../../js/plugins/angular/angular.min.js?t=20180208"></script>
+    <script src="../../../js/controller/business/BI/bi_payment.js?t=20180118"></script>
+    <!--日历插件-->
+    <script src="../../../js/plugins/laydate/laydate.js?t=20180208"></script>
+</body>
+
+</html>

@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html ng-app="dataForecast">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title></title>
+
+    <link href="../../css/bootstrap.min.css?t=20180208" rel="stylesheet">
+    <link href="../../css/font-awesome.min.css?t=20180208" rel="stylesheet">
+    <link href="../../css/plugins/bootstrap-table/bootstrap-table.min.css?t=20180208" rel="stylesheet">
+    <link href="../../css/animate.min.css?t=20180208" rel="stylesheet">
+    <link href="../../css/style.min.css?t=20180208" rel="stylesheet">
+
+    <base target="_blank">
+    <style>
+        .bg-color {
+            background: rgb(223, 240, 216) !important;
+        }
+
+        .modal-body {
+            max-height: 300px;
+            min-height: 300px;
+            overflow-x: hidden
+        }
+
+        .form-horizontal .form-group {
+            margin-bottom: 8px;
+        }
+
+        .form-horizontal .control-label,
+        .form-group>div {
+            padding-left: 0;
+            padding-right: 0;
+        }
+
+        .datepicker.dropdown-menu {
+            z-index: 10000 !important;
+        }
+
+        .col-sm-2 {
+            padding-right: 0;
+        }
+
+        .col-sm-2 select {
+            width: -webkit-fill-available !important;
+        }
+
+        .Proportion {
+            position: absolute;
+            top: 9px;
+            right: 4px;
+        }
+
+        .modal-body h1 {
+            text-align: center;
+            margin-top: -5px;
+            font-size: 20px;
+        }
+
+        .modal-body table {
+            margin: 0 auto;
+        }
+
+        .modal-body tr td {
+            padding: 8px;
+        }
+
+        .modal-body tr td:nth-child(1) {
+            text-align: right;
+        }
+
+        #showmenu {
+            background-color: #888888;
+            padding: 5px 10px;
+            cursor: pointer;
+            color: #fff;
+        }
+
+        .caret {
+            position: absolute;
+            top: 16px;
+            right: 7px;
+        }
+        #demo-table{
+            display: none;
+        }
+
+
+    </style>
+</head>
+
+<body class="gray-bg" ng-controller="dataForecastCtrl">
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <!-- Panel Other -->
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>数据预估</h5>
+                <div class="ibox-tools">
+                </div>
+            </div>
+            <div class="ibox-content">
+                <div class="container" style="width: 100%">
+                    <div class="row">
+                        <div class="col-md-6 col-md-offset-3">
+                            <form method="get" class="form-horizontal">
+                                <!--<div class="form-group">-->
+                                    <!--<label class="col-sm-2 col-md-2 control-label" style="text-align: left">输入数据</label>-->
+                                <!--</div>-->
+                                <div class="form-group">
+                                    <label class="col-sm-2 col-md-2 control-label text-right">
+                                        <span class="text-danger">*</span>开始时间：</label>
+                                    <div class="col-sm-10 col-md-4">
+                                        <div class="input-group">
+                                            <input type="text" class="form-control demo-input" ng-model="copyforecastArr.start_date" id="date3" disabled>
+                                        <span class="input-group-addon dateclick" ng-hide="edit">
+                                            <i class="fa fa-calendar dateicon" id="date_3"></i>
+                                        </span>
+                                        </div>
+                                    </div>
+                                    <label class="col-sm-2 control-label text-right">
+                                        <span class="text-danger">*</span>结束时间：</label>
+                                    <div class="col-sm-10 col-md-4">
+                                        <div class="input-group">
+                                            <input type="text" class="form-control demo-input" ng-model="copyforecastArr.end_date" id="date4" disabled>
+                                        <span class="input-group-addon dateclick">
+                                            <i class="fa fa-calendar dateicon" id="date_4"></i>
+                                        </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 col-sm-2 control-label text-right">
+                                        <span class="text-danger">*</span>产品名称：</label>
+                                    <div class="col-sm-10 col-md-4">
+                                        <input type="text" class="form-control" ng-model="copyforecastArr.product_name">
+                                    </div>
+                                    <label class="col-sm-2 col-sm-2 control-label text-right">
+                                        <span class="text-danger">*</span>次留：</label>
+                                    <div class="col-sm-10 col-md-4">
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" ng-model="copyforecastArr.second_day_stay">
+                                            <div class="input-group-addon">%</div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 col-sm-2 control-label text-right">
+                                        <span class="text-danger">*</span>三留：</label>
+                                    <div class="col-sm-10 col-md-4">
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" ng-model="copyforecastArr.third_day_stay">
+                                            <div class="input-group-addon">%</div>
+                                        </div>
+                                    </div>
+                                    <label class="col-sm-2 col-sm-2 control-label text-right">
+                                        <span class="text-danger">*</span>七留：</label>
+                                    <div class="col-sm-10 col-md-4">
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" ng-model="copyforecastArr.seven_day_stay">
+                                            <div class="input-group-addon">%</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 col-sm-2 control-label text-right">
+                                        <span class="text-danger">*</span>十五留：</label>
+                                    <div class="col-sm-10 col-md-4">
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" ng-model="copyforecastArr.fifteen_day_stay">
+                                            <div class="input-group-addon">%</div>
+                                        </div>
+                                    </div>
+                                    <label class="col-sm-2 col-sm-2 control-label text-right">
+                                        <span class="text-danger">*</span>三十留：</label>
+                                    <div class="col-sm-10 col-md-4">
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" ng-model="copyforecastArr.thirty_day_stay">
+                                            <div class="input-group-addon">%</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 col-sm-2 control-label text-right">
+                                        <span class="text-danger">*</span>付费率：</label>
+                                    <div class="col-sm-10 col-md-4">
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" ng-model="copyforecastArr.pay_rate">
+                                            <div class="input-group-addon">%</div>
+                                        </div>
+                                    </div>
+                                    <label class="col-sm-2 col-sm-2 control-label text-right">
+                                        <span class="text-danger">*</span>推广付费率：</label>
+                                    <div class="col-sm-10 col-md-4">
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" ng-model="copyforecastArr.advise_pay_rate">
+                                            <div class="input-group-addon">%</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 col-sm-2 control-label text-right">
+                                        <span class="text-danger">*</span>arpu类型：</label>
+                                    <div class="col-sm-10 col-md-4" style="padding-top:5px;padding-left:7px">
+                                        <label style="margin-right: 10px" class="mr10">
+                                            <input type="radio" name="contract" value="10" ng-model="copyforecastArr.arpu_type"> 新增
+                                        </label>
+                                        <label>
+                                            <input type="radio" name="contract" value="20" ng-model="copyforecastArr.arpu_type"> 活跃
+                                        </label>
+                                    </div>
+                                    <label class="col-sm-2 control-label text-right">
+                                        <span class="text-danger">*</span>arpu：</label>
+                                    <div class="col-sm-5 col-md-2">
+                                        <input type="number" class="form-control" ng-model="copyforecastArr.arpu_value_weekend" placeholder="工作日">
+                                    </div>
+                                    <div class="col-sm-5 col-md-2">
+                                        <input type="number" class="form-control" ng-model="copyforecastArr.arpu_value_work_day" placeholder="周末">
+                                    </div>
+
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 col-sm-2 control-label text-right">
+                                        <span class="text-danger">*</span>推广arpu类型：</label>
+                                    <div class="col-sm-10 col-md-4" style="padding-top:5px;padding-left:7px">
+                                        <label style="margin-right: 10px" class="mr10">
+                                            <input type="radio" name="contract1" value="10" ng-model="copyforecastArr.advise_arpu_type"> 新增
+                                        </label>
+                                        <label>
+                                            <input type="radio" name="contract1" value="20" ng-model="copyforecastArr.advise_arpu_type"> 活跃
+                                        </label>
+                                    </div>
+                                    <label class="col-sm-2 col-sm-2 control-label text-right">
+                                        <span class="text-danger">*</span>推广arpu：</label>
+                                    <div class="col-sm-5 col-md-2">
+                                        <input type="number" class="form-control" ng-model="copyforecastArr.advise_arpu_work_day" placeholder="工作日">
+                                    </div>
+                                    <div class="col-sm-5 col-md-2">
+                                        <input type="number" class="form-control" ng-model="copyforecastArr.advise_arpu_weekend" placeholder="周末">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 col-sm-2 control-label text-right">
+                                        <span class="text-danger">*</span>日均新增：</label>
+                                    <div class="col-sm-5 col-md-2">
+                                        <input type="number" class="form-control" ng-model="copyforecastArr.ddau_work_day" placeholder="工作日">
+                                    </div>
+                                    <div class="col-sm-5 col-md-2">
+                                        <input type="number" class="form-control" ng-model="copyforecastArr.ddau_weekend" placeholder="周末">
+                                    </div>
+                                    <label class="col-sm-2 col-sm-2 control-label text-right">
+                                        <span class="text-danger">*</span>推广分成：</label>
+                                    <div class="col-sm-10 col-md-4">
+                                        <input type="number" class="form-control" ng-model="copyforecastArr.advise_share_rate">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 col-sm-2 control-label text-right">
+                                        <span class="text-danger">*</span>结算分成：</label>
+                                    <div class="col-sm-10 col-md-4">
+                                        <input type="number" class="form-control" ng-model="copyforecastArr.balance_division">
+                                    </div>
+                                    <div class="col-sm-10 col-md-6 text-right">
+                                        <button type="button" class="btn btn-success" ng-click="preservaConfirm()">预估</button>
+                                        <button type="button" class="btn btn-white" ng-click="preservaConfirm(1)">生成</button>
+                                        <button class="btn btn-white" type="button" ng-click="export()"><i class="fa fa-download"></i> 下载</button>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-sm-12 col-md-12 text-right">
+                                        <span class="text-danger" ng-bind="usersError"></span>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                    </div>
+                    <table id="demo-table">
+                        <thead>
+                            <tr ng-click="tab()">
+                                <!-- <th data-formatter="checks"></th> -->
+                                <th data-field="date">日期</th>
+                                <th data-field="product_name" data-formatter="smaller">产品</th>
+                                <th data-field="new_data_level">新增量级</th>
+                                <th data-field="day_active_users">DAU</th>
+                                <th data-field="active_arpu">活跃arpu</th>
+                                <th data-field="advise_active_arpu">推广活跃arpu</th>
+                                <th data-field="advise_new_user_arpu">推广新增arpu</th>
+                                <th data-field="real_recharge_amount">实际充值金额</th>
+                                <th data-field="total_recharge_amount">总充值金额</th>
+                                <th data-field="advise_amount">推广金额</th>
+                                <th data-field="pay_rate">付费率</th>
+                                <th data-field="advise_pay_rate">推广付费率</th>
+                                <th data-field="advise_account">推广账户数</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="modal inmodal" id="table_success" data-backdrop="static" tabindex="-1" role="dialog" aria-hidden="false">
+            <div ng-include="'../success.html'"></div>
+        </div>
+    </div>
+
+    <script src="../../js/jquery.min.js?t=20180208"></script>
+    <script src="../../js/bootstrap.min.js?t=20180208"></script>
+    <script src="../../js/content.min.js?t=20180208"></script>
+    <script src="../../js/plugins/bootstrap-table/bootstrap-table.min.js?t=20180208"></script>
+    <script src="../../js/plugins/bootstrap-table/bootstrap-table-fixed-columns.js?t=20180208"></script>
+    <script src="../../js/plugins/bootstrap-table/bootstrap-table-mobile.min.js?t=20180208"></script>
+    <script src="../../js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js?t=20180208"></script>
+    <script src="../../js/plugins/angular/angular.min.js?t=20180208"></script>
+    <script src="../../js/controller/forecast/data_forecast.js?t=201712058"></script>
+    <!--日历插件-->
+    <script src="../../js/plugins/laydate/laydate.js?t=20180208"></script>
+</body>
+
+</html>

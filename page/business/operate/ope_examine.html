@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html ng-app="opeExamine">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title></title>
+
+    <link href="../../../css/bootstrap.min.css?v=3.3.5" rel="stylesheet">
+    <link href="../../../css/bootstrap-editable.css?v=3.3.5" rel="stylesheet">
+    <link href="../../../css/font-awesome.min.css?v=4.4.0" rel="stylesheet">
+    <link href="../../../css/plugins/bootstrap-table/bootstrap-table.min.css?v=7.0.1" rel="stylesheet">
+    <link href="../../../css/plugins/iCheck/custom.css?v=7.0.1" rel="stylesheet">
+    <link href="../../../css/animate.min.css?v=7.0.1" rel="stylesheet">
+    <link href="../../../css/style.min.css?v=4.0.0" rel="stylesheet">
+
+    <base target="_blank">
+    <style>
+        .bg-color{
+            background: rgb(223, 240, 216) !important;
+        }
+        .modal-body{
+            max-height: 300px;
+            overflow-x: hidden
+        }
+        .form-horizontal .form-group{
+            margin-bottom: 8px;
+        }
+        .form-horizontal .control-label,.form-group>div{
+            padding-left: 0;
+            padding-right: 0;
+        }
+        .datepicker.dropdown-menu{
+            z-index: 10000 !important;
+        }
+        .col-sm-2{
+            padding-right: 0;
+        }
+        .col-sm-2 select{
+            width:-webkit-fill-available !important;
+        }
+        .Proportion{
+            position: absolute;
+            top: 9px;
+            right: 4px;
+        }
+        .modal-body h1{
+            text-align: center;
+            margin-top: -5px;
+            font-size: 20px;
+        }
+        .modal-body table{
+            margin: 0 auto;
+        }
+        .modal-body tr td{
+            padding: 8px;
+        }
+        .modal-body tr td:nth-child(1){
+            text-align: right;
+        }
+        #showmenu{
+            background-color: #888888;
+            padding: 5px 10px;
+            cursor: pointer;
+            color: #fff;
+        }
+
+        .caret {
+            position: absolute;
+            top: 16px;
+            right: 7px;
+        }
+    </style>
+
+</head>
+
+<body class="gray-bg" ng-controller="opeExamineCtrl">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <!-- Panel Other -->
+    <div class="ibox float-e-margins">
+        <div class="ibox-title">
+            <h5>运营数据审核</h5>
+            <div class="ibox-tools">
+                <a class="collapse-link">
+                    <i class="fa fa-chevron-up"></i>
+                </a>
+                <!--<a class="dropdown-toggle" data-toggle="dropdown" href="#">-->
+                    <!--<i class="fa fa-wrench"></i>-->
+                <!--</a>-->
+                <!--<ul class="dropdown-menu dropdown-user">-->
+                    <!--<li><a href="#">选项1</a>-->
+                    <!--</li>-->
+                    <!--<li><a href="#">选项2</a>-->
+                    <!--</li>-->
+                <!--</ul>-->
+                <!--<a class="close-link">-->
+                    <!--<i class="fa fa-times"></i>-->
+                <!--</a>-->
+            </div>
+        </div>
+        <div class="ibox-content">
+            <div class="base-margin" id="query">
+                <form class="form-inline" role="form" method="post" id="queryForm" style="padding: 0 15px">
+                    <div class="row">
+                        <!--<div class="col-sm-1">-->
+                            <!--<button class="btn btn-success" type="button" ng-click="NewlyAdded()"><i class="fa fa-plus"></i> 新增</button> &nbsp;-->
+                        <!--</div>-->
+                            <!--<div class="input-group">-->
+                            <!--<input type="text" class="form-control input-s" name="search" placeholder="">-->
+                            <!--<div class="input-group-btn">-->
+                                <!--<button type="button" class="btn btn-s btn-white">-->
+                                    <!--搜索-->
+                                <!--</button>-->
+                            <!--</div>-->
+                            <!--</div>-->
+                        <div class="col-sm-2">
+                            <div class="input-group">
+                                <input type="text" class="form-control demo-input" ng-model="Newdate1" id="date1" disabled>
+                                <span class="input-group-addon dateclick">
+                                    <i class="fa fa-calendar dateicon" id="date_1"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-sm-2" >
+                            <div class="input-group">
+                                <input type="text" class="form-control demo-input" ng-model="Newdate2" id="date2" disabled>
+                                <span class="input-group-addon dateclick">
+                                    <i class="fa fa-calendar dateicon" id="date_2"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <div class="dropdown" style="position:relative">
+                                <input type="text" class="form-control dropdown-toggle" id="dropdown-channel" ng-model="select.selectChannel" placeholder="-选择项目-"
+                                    style="width:100%" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                <span class="caret"></span>
+                                <ul class="dropdown-menu select_ul" aria-labelledby="dropdown-channel">
+                                    <li ng-repeat="item in ChannelList track by $index" ng-show="select.selectChannel === '' || item.project_name.includes(select.selectChannel)"
+                                        ng-click="setChannel(item);projectFun()">
+                                        <a>{{item.project_name}}</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <div class="dropdown" style="position:relative">
+                                <input type="text" class="form-control dropdown-toggle" id="dropdown-company" ng-model="select.selectCompany" placeholder="-选择产品-"
+                                    style="width:100%" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                <span class="caret"></span>
+                                <ul class="dropdown-menu select_ul" aria-labelledby="dropdown-company">
+                                    <li ng-repeat="item in CompanyList track by $index" ng-show="select.selectCompany === '' || item.product_name.includes(select.selectCompany)"
+                                        ng-click="setCompany(item)">
+                                        <a>{{item.product_name}}</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <div class="dropdown" style="position:relative">
+                                <input type="text" class="form-control dropdown-toggle" id="dropdown-region" ng-model="select.selectRegion" placeholder="-选择渠道-"
+                                    style="width:100%" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                <span class="caret"></span>
+                                <ul class="dropdown-menu select_ul" aria-labelledby="dropdown-region">
+                                    <li ng-repeat="item in RegionList track by $index" ng-show="select.selectRegion === '' || item.channel_name.includes(select.selectRegion)"
+                                        ng-click="setRegion(item)">
+                                        <a>{{item.channel_name}}</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-sm-1">
+                            <button class="btn btn-success" type="button" ng-click="search()">搜索</button> &nbsp;
+                        </div>
+                        <div class="pull-right" style="margin-right: 16px">
+                            <!--<button class="btn btn-white" type="button" ng-click="doQuery()"><i class="fa fa-refresh"></i> 刷新</button>-->
+                            <button class="btn btn-white" type="button" ng-click="doQuery()"><i class="fa fa-refresh"></i> 刷新</button>
+                            <!--<button class="btn btn-info" type="button" ng-disabled="!editState" ng-click="editFun()" disabled="disabled"><i class="fa fa-edit"></i> 编辑</button>-->
+                            <!--<button class="btn btn-danger" type="button" ng-disabled="!deleteState" ng-click="deleteFun()"><i class="fa fa-trash"></i> 删除</button>-->
+                            <button class="btn btn-white" type="button" ng-disabled="!editState" ng-click="editFun(1)">详情</button>
+                            <button class="btn btn-white" type="button" ng-click="iconFun()">导出</button>
+                        </div>
+                    </div>
+
+
+                    <!--<div class="form-group">-->
+                        <!--<button type="button" id="queryBtn" onclick="doQuery();" class="btn btn-primary">查询</button>-->
+                    <!--</div>-->
+                    <!--<div class="form-group btn-right">-->
+                        <!--<button type="button" class="btn btn-primary" id="addBtn" onclick="addUser();">新增用户</button>-->
+                    <!--</div>-->
+                </form>
+            </div>
+            <div class="container"  style="width: 100%">
+                <table id="demo-table">
+                    <thead>
+                    <tr ng-click="tab()">
+                        <th data-formatter="numData"></th>
+                        <th data-field="date">日期</th>
+                        <th data-field="project">项目</th>
+                        <th data-field="product">产品</th>
+                        <th data-field="channel">渠道</th>
+                        <th data-field="third_party_amount">第三方流水金额</th>
+                        <th data-field="operator_amount">运营商流水金额</th>
+                        <th data-field="total_amount">总流水金额</th>
+                        <th data-field="new_arrivals">新增</th>
+                        <th data-field="active_users">活跃</th>
+                        <th data-field="total_pay">总付费人数</th>
+                        <th data-field="newly_arpu">新增arpu</th>
+                        <th data-field="active_arpu">活跃arpu</th>
+                        <th data-field="pay_arpu">付费arpu</th>
+                        <th data-field="pay_rate">付费率</th>
+                        <th data-field="second_day_stay">次日留存</th>
+                        <th data-field="third_day_stay">三日留存</th>
+                        <th data-field="seven_day_stay">七日存留</th>
+                        <th data-field="third_party_recharge_count">第三方充值人数</th>
+                        <th data-field="mm_amount">MM流水金额</th>
+                        <th data-field="migu_amount">咪咕流水金额</th>
+                        <th data-field="unicom_amount">小沃流水金额</th>
+                        <th data-field="telecom_amount">电信流水金额</th>
+                        <th data-field="mm_recharge_count">MM充值人数</th>
+                        <th data-field="migu_recharge_count">咪咕充值人数</th>
+                        <th data-field="unicom_recharge_count">小沃充值人数</th>
+                        <th data-field="telecom_recharge_count">电信充值人数</th>
+                    </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!--<div class="modal inmodal" id="table_delete" data-backdrop="static" tabindex="-1" role="dialog" aria-hidden="false">-->
+        <!--<div ng-include="'../../deletealert.html'"></div>-->
+    <!--</div>-->
+    <!--<div class="modal inmodal" id="table_success" data-backdrop="static" tabindex="-1" role="dialog" aria-hidden="false">-->
+        <!--<div class="modal-dialog modal-sm" style="margin-top: 200px;">-->
+            <!--<div class="modal-content animated fadeInDown">-->
+                <!--<div class="modal-header" style="text-align: left">-->
+                    <!--<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">关闭</span>-->
+                    <!--</button>-->
+                    <!--<p id="code"></p>-->
+                <!--</div>-->
+                <!--<div class="modal-footer">-->
+                    <!--&lt;!&ndash;<button id="backAddress" type="button" class="btn btn-primary" onclick="deleteConfirm()">确认</button>&ndash;&gt;-->
+                    <!--<button type="button" class="btn btn-white" data-dismiss="modal">关闭</button>-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</div>-->
+    <!--添加修改弹出层-->
+    <!--<div class="modal fade" id="preservaModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">-->
+        <!--<div class="modal-dialog">-->
+            <!--<div class="modal-content">-->
+                <!--<div class="modal-header">-->
+                    <!--<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>-->
+                    <!--<h4 class="modal-title" id="myModalLabel"></h4>-->
+                <!--</div>-->
+                <!--<div class="modal-body">-->
+                    <!--<form method="get" class="form-horizontal">-->
+                        <!--<div class="form-group">-->
+                            <!--<label class="col-sm-2 col-md-2 control-label text-right"><span class="text-danger">*</span>日期：</label>-->
+                            <!--<div class="col-sm-10 col-md-4" id="data_1">-->
+                                <!--<div class="input-group date">-->
+                                    <!--<input type="text" class="form-control" ng-model="copyexamineArr.date" disabled>-->
+                                    <!--<span class="input-group-addon"><i class="fa fa-calendar"></i></span>-->
+                                <!--</div>-->
+                            <!--</div>-->
+                            <!--<label class="col-sm-2 col-md-2 control-label text-right"><span class="text-danger">*</span>项目：</label>-->
+                            <!--<div class="col-sm-10 col-md-4">-->
+                                <!--<select class="form-control" ng-model="copyexamineArr.project_id" ng-change="projectFun(1)">-->
+                                    <!--<option value="">-请选择-</option>-->
+                                    <!--<option value="{{item.id}}" ng-repeat="item in Channel_s track by $index">{{item.project_name}}</option>-->
+                                <!--</select>-->
+                            <!--</div>-->
+                        <!--</div>-->
+                        <!--<div class="form-group">-->
+                            <!--<label class="col-sm-2 col-md-2 control-label text-right"><span class="text-danger">*</span>产品：</label>-->
+                            <!--<div class="col-sm-10 col-md-4">-->
+                                <!--<select class="form-control" ng-model="copyexamineArr.product_id" >-->
+                                    <!--<option value="">-请选择-</option>-->
+                                    <!--<option value="{{item.id}}" ng-repeat="item in Region_s track by $index">{{item.product_name}}</option>-->
+                                <!--</select>-->
+                            <!--</div>-->
+                            <!--<label class="col-sm-2 col-md-2 control-label text-right"><span class="text-danger">*</span>渠道：</label>-->
+                            <!--<div class="col-sm-10 col-md-4">-->
+                                <!--<select class="form-control" ng-model="copyexamineArr.channel_id" >-->
+                                    <!--<option value="">-请选择-</option>-->
+                                    <!--<option value="{{item.id}}" ng-repeat="item in Company_s track by $index">{{item.channel_name}}</option>-->
+                                <!--</select>-->
+                            <!--</div>-->
+                        <!--</div>-->
+                        <!--<div class="form-group">-->
+                            <!--<label class="col-sm-2 col-sm-2 control-label text-right"><span class="text-danger">*</span>新增：</label>-->
+                            <!--<div class="col-sm-10 col-md-4">-->
+                                <!--<input type="number" ng-keyup="onkeyup(copyexamineArr.new_arrivals,'new_arrivals')" class="form-control" ng-model="copyexamineArr.new_arrivals">-->
+                                <!--<span class="Proportion">%</span>-->
+                            <!--</div>-->
+                            <!--<label class="col-sm-2 col-sm-2 control-label text-right"><span class="text-danger">*</span>活跃：</label>-->
+                            <!--<div class="col-sm-10 col-md-4">-->
+                                <!--<input type="number" ng-keyup="onkeyup(copyexamineArr.active_users,'active_users')" class="form-control" ng-model="copyexamineArr.active_users">-->
+                                <!--<span class="Proportion">%</span>-->
+                            <!--</div>-->
+                        <!--</div>-->
+                        <!--<div class="form-group">-->
+                            <!--<label class="col-sm-2 col-sm-2 control-label text-right">次日留存：</label>-->
+                            <!--<div class="col-sm-10 col-md-4">-->
+                                <!--<input type="number" ng-keyup="onkeyup(copyexamineArr.second_day_stay,'second_day_stay')" class="form-control" ng-model="copyexamineArr.second_day_stay">-->
+                                <!--<span class="Proportion">%</span>-->
+                            <!--</div>-->
+                            <!--<label class="col-sm-2 col-sm-2 control-label text-right">三日留存：</label>-->
+                            <!--<div class="col-sm-10 col-md-4">-->
+                                <!--<input type="number" ng-keyup="onkeyup(copyexamineArr.third_day_stay,'third_day_stay')" class="form-control" ng-model="copyexamineArr.third_day_stay">-->
+                                <!--<span class="Proportion">%</span>-->
+                            <!--</div>-->
+                        <!--</div>-->
+                        <!--<div class="form-group">-->
+                            <!--<label class="col-sm-2 col-sm-2 control-label text-right">七日存留：</label>-->
+                            <!--<div class="col-sm-10 col-md-4">-->
+                                <!--<input type="number" ng-keyup="onkeyup(copyexamineArr.seven_day_stay,'seven_day_stay')" class="form-control" ng-model="copyexamineArr.seven_day_stay">-->
+                                <!--<span class="Proportion">%</span>-->
+                            <!--</div>-->
+                        <!--</div>-->
+                    <!--</form>-->
+                <!--</div>-->
+                <!--<div class="modal-footer">-->
+                    <!--<span class="text-danger" ng-bind="usersError"></span>&nbsp;&nbsp;-->
+                    <!--<button type="button" class="btn btn-success" ng-click="preservaConfirm()">保存</button>-->
+                    <!--&lt;!&ndash;<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>&ndash;&gt;-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</div>-->
+    <div class="popover fade top in editable-container editable-popup" role="tooltip" id="popoverstate">
+        <div class="arrow" style="left: 21.5686%;"></div>
+        <h3 class="popover-title">状态</h3>
+        <div class="popover-content"><div>
+            <div class="editableform-loading" style="display: none;"></div>
+            <form class="form-inline editableform" style="">
+                <div class="control-group form-group">
+                    <div>
+                        <div class="editable-input">
+                            <div class="editable-checklist">
+                                <div>
+                                    <label><input id="pop_che" type="checkbox" value="1"><span> 状态</span></label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="editable-buttons">
+                            <button type="submit" class="btn btn-primary btn-sm editable-submit" ng-click="stateedit()">
+                                <i class="glyphicon glyphicon-ok"></i>
+                            </button>
+                            <button type="button" class="btn btn-default btn-sm editable-cancel" ng-click="statedelete()">
+                                <i class="glyphicon glyphicon-remove"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="editable-error-block help-block" style="display: none;">
+                    </div>
+                </div>
+            </form>
+        </div>
+        </div>
+    </div>
+    <!--上级主管选中弹出窗-->
+    <!--<div class="modal fade" id="charge" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">-->
+        <!--<div ng-include="'../../charge.html'"></div>-->
+    <!--</div>-->
+    <!--<div class="modal fade" id="charge_radioModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">-->
+        <!--<div ng-include="'../../charge_radio.html'"></div>-->
+    <!--</div>-->
+
+    <div class="modal fade" id="details" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title">运营数据</h4>
+                </div>
+                <div class="modal-body" style="max-height: 600px">
+                    <div class="dropdown">
+                        <a class="dropdown-toggle" id="showmenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                            操作V
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="showmenu">
+                            <li><a href="#" ng-click="printAll()">打印全部...</a></li>
+                            <li><a href="#" ng-click="printContent()">只打印内容...</a></li>
+                            <li><a href="#" ng-click="wordExport()">另存为word...</a></li>
+                            <li><a href="#" ng-click="hideModal()">关闭</a></li>
+                            <li><a href="#" ng-click="editFun(1)">刷新</a></li>
+                        </ul>
+                    </div>
+                    <h1>运营数据</h1>
+                    <table id="detail" border="1" width="90%">
+                        <tbody>
+                        <tr>
+                            <td width="30%">日期	</td>
+                            <td width="70%">{{copyexamineArr.date}}</td>
+                        </tr>
+                        <!--<tr>-->
+                        <!--<td>申请人</td>-->
+                        <!--<td>{{copyexamineArr.project_id}}</td>-->
+                        <!--</tr>-->
+                        <!--<tr>-->
+                        <!--<td>申请人部门</td>-->
+                        <!--<td>{{copyexamineArr.cp_share_rate}}</td>-->
+                        <!--</tr>-->
+                        <!--<tr>-->
+                        <!--<td>日期</td>-->
+                        <!--<td>{{copyexamineArr.date}}</td>-->
+                        <!--</tr>-->
+                        <!--<tr>-->
+                        <!--<td>时间</td>-->
+                        <!--<td>{{copyexamineArr.publish_time}}</td>-->
+                        <!--</tr>-->
+                        <tr>
+                            <td>项目</td>
+                            <td>{{copyexamineArr.project}}</td>
+                        </tr>
+                        <tr>
+                            <td>产品</td>
+                            <td>{{copyexamineArr.product}}</td>
+                        </tr>
+                        <tr>
+                            <td>渠道</td>
+                            <td>{{copyexamineArr.channel}}</td>
+                        </tr>
+                        <tr>
+                            <td>第三方充值金额</td>
+                            <td>{{copyexamineArr.third_party_amount}}</td>
+                        </tr>
+                        <tr>
+                            <td>运营商充值金额</td>
+                            <td>{{copyexamineArr.operator_amount}}</td>
+                        </tr>
+                        <tr>
+                            <td>总充值金额</td>
+                            <td>{{copyexamineArr.total_amount}}</td>
+                        </tr>
+                        <tr>
+                            <td>新增</td>
+                            <td>{{copyexamineArr.new_arrivals}}</td>
+                        </tr>
+                        <tr>
+                            <td>活跃</td>
+                            <td>{{copyexamineArr.active_users}}</td>
+                        </tr>
+                        <tr>
+                            <td>总付费人数</td>
+                            <td>{{copyexamineArr.total_pay}}</td>
+                        </tr>
+                        <tr>
+                            <td>新增arpu</td>
+                            <td>{{copyexamineArr.newly_arpu}}</td>
+                        </tr>
+                        <tr>
+                            <td>活跃arpu</td>
+                            <td>{{copyexamineArr.active_arpu}}</td>
+                        </tr>
+                        <tr>
+                            <td>付费arpu</td>
+                            <td>{{copyexamineArr.pay_arpu}}</td>
+                        </tr>
+                        <tr>
+                            <td>付费率</td>
+                            <td>{{copyexamineArr.pay_rate}}</td>
+                        </tr>
+                        <tr>
+                            <td>次日留存</td>
+                            <td>{{copyexamineArr.second_day_stay}}</td>
+                        </tr>
+                        <tr>
+                            <td>三日留存</td>
+                            <td>{{copyexamineArr.third_day_stay}}</td>
+                        </tr>
+                        <tr>
+                            <td>七日存留</td>
+                            <td>{{copyexamineArr.seven_day_stay}}</td>
+                        </tr>
+                        <tr>
+                            <td>第三方充值人数</td>
+                            <td>{{copyexamineArr.third_party_recharge_count}}</td>
+                        </tr>
+                        <tr>
+                            <td>MM充值金额</td>
+                            <td>{{copyexamineArr.mm_amount}}</td>
+                        </tr>
+                        <tr>
+                            <td>咪咕充值金额</td>
+                            <td>{{copyexamineArr.migu_amount}}</td>
+                        </tr>
+                        <tr>
+                            <td>小沃充值金额</td>
+                            <td>{{copyexamineArr.unicom_amount}}</td>
+                        </tr>
+                        <tr>
+                            <td>电信充值金额</td>
+                            <td>{{copyexamineArr.telecom_amount}}</td>
+                        </tr>
+                        <tr>
+                            <td>MM充值人数</td>
+                            <td>{{copyexamineArr.mm_recharge_count}}</td>
+                        </tr>
+                        <tr>
+                            <td>咪咕充值人数</td>
+                            <td>{{copyexamineArr.migu_recharge_count}}</td>
+                        </tr>
+                        <tr>
+                            <td>小沃充值人数</td>
+                            <td>{{copyexamineArr.unicom_recharge_count}}</td>
+                        </tr>
+                        <tr>
+                            <td>电信充值人数</td>
+                            <td>{{copyexamineArr.telecom_recharge_count}}</td>
+                        </tr>
+                        <tr>
+                            <td>操作时间</td>
+                            <td>{{copyexamineArr.update_date}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <div class="ibox float-e-margins" id="deal-list" ng-show="copyexamineArr.dealList.length != '' || copyexamineArr.dealList.length != 0">
+                        <div class="ibox-title" style="border: none">
+                            <h5>处理记录({{ copyexamineArr.dealList.length }})</h5>
+                            <div class="ibox-tools">
+                                <a class="collapse-link">
+                                    <i class="fa fa-chevron-down"></i>
+                                </a>
+                                <a class="close-link">
+                                    <i class="fa fa-times"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="ibox-content" style="display: none">
+                            <table id="deal-table">
+                                <thead>
+                                <tr ng-click="tab()">
+                                    <th data-field="id">序号</th>
+                                    <th data-field="deal_action">动作</th>
+                                    <th data-field="deal_user_name">处理人</th>
+                                    <th data-field="deal_status">状态</th>
+                                    <th data-field="">说明</th>
+                                    <th data-field="deal_time">时间</th>
+                                </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="ibox float-e-margins"  ng-if="copyexamineArr.verify_status == 1">
+                        <div class="ibox-title" style="border: none">
+                            <h5>审核处理</h5>
+                            <div class="ibox-tools">
+                                <!--<a class="collapse-link">-->
+                                    <!--<i class="fa fa-chevron-down"></i>-->
+                                <!--</a>-->
+                                <a class="close-link">
+                                    <i class="fa fa-times"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="ibox-content">
+                            <table border="1" width="97%">
+                                <tbody>
+                                <tr>
+                                    <td width="30%"><span class="text-danger">*</span>处理动作</td>
+                                    <td>
+                                        <label><input type="radio" name="examine"/>通过</label>
+                                        <label><input type="radio" name="examine"/>未通过</label>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>说明:</td>
+                                    <td>
+                                        <textarea rows="3" cols="42" style="resize: none;"></textarea>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td>
+                                        <button type="button" class="btn btn-sm btn-success">提交处理</button>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="ibox float-e-margins" id="access-list">
+                        <div class="ibox-title" style="border: none">
+                            <h5>查阅记录</h5>
+                            <div class="ibox-tools">
+                                <a class="close-link">
+                                    <i class="fa fa-times"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="ibox-content">
+                            <div class="row">
+                                <div class="col-md-2" ng-repeat="user in copyexamineArr.accessList">
+                                    <div class="thumbnail text-center">
+                                        <img class="img-circle" ng-src="{{ 'http://localhost/pailediOa/img/user.png' }}" alt="{{ user.access_username }}">
+                                        <div class="caption" style="padding: 9px 0 0 0">
+                                            <small>{{ user.access_username }}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--<div class="modal-footer">-->
+                    <!--<span class="text-danger" ng-bind="usersError"></span>&nbsp;&nbsp;-->
+                    <!--&lt;!&ndash;<button type="button" class="btn btn-success" ng-disabled="copyuserArr.username == null || copyuserArr.username == '' || copyuserArr.realname == null || copyuserArr.realname == '' || copyuserArr.position == null || copyuserArr.position == '' || copyuserArr.structure_id == null || copyuserArr.structure_id    == ''" ng-click="preservaConfirm()">保存</button>&ndash;&gt;-->
+                    <!--<button type="button" class="btn btn-danger" ng-click="structuresList(false)">刷新数据</button>-->
+                    <!--<button type="button" class="btn btn-danger" data-dismiss="modal">取消</button>-->
+                    <!--<button type="button" class="btn btn-success" ng-click="deparFun()" >保存</button>-->
+                <!--</div>-->
+            </div>
+        </div>
+    </div>
+    <!-- End Panel Other -->
+    <!--<a href="#" id="country" data-type="checklist" data-title="Input country" data-source="[{ value: '1', text: '开启' },{ value: '0', text: '关闭' }]" data-value="0"><i class="fa fa-square-o"></i></a>-->
+</div>
+<script src="../../../js/jquery.min.js?v=2.1.4"></script>
+<script src="../../../js/bootstrap.min.js?v=3.3.5"></script>
+<script src="../../../js/bootstrap-editable.min.js?v=7.0.1"></script><!--表格行内编辑插件-->
+<script src="../../../js/content.min.js?v=1.0.0?v=7.0.1"></script>
+<script src="../../../js/plugins/bootstrap-table/bootstrap-table.min.js?v=7.0.1"></script>
+<script src="../../../js/plugins/bootstrap-table/bootstrap-table-mobile.min.js?v=7.0.1"></script>
+<script src="../../../js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js?v=7.0.1"></script>
+<script src="../../../js/config.js?v=7.0.1"></script><!--通用配置config-->
+<script src="../../../js/plugins/angular/angular.min.js?v=7.0.1"></script>
+<script src="../../../js/Base64.js?v=7.0.1"></script>
+<script src="../../../js/controller/business/operate/ope_examine.js?v=7.0.1"></script>
+<script src="../../../js/plugins/iCheck/icheck.min.js?v=7.0.1"></script>
+<script src="../../../js/plugins/print/print.min.js?v=7.0.1"></script>
+<script src="../../../js/plugins/fileSaver/fileSaver.min.js?v=7.0.1"></script>
+<script src="../../../js/plugins/wordExport/wordExport.js?v=7.0.1"></script>
+<!--日历插件-->
+<script src="../../../js/plugins/laydate/laydate.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,85 @@
+<!--<div class="modal fade" id="departmentModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">-->
+<style>
+    ul li,ul{
+        list-style: none;
+        padding: 0;
+    }
+    .dt-ul a{
+        color: #000;
+    }
+    .dt-ul li{
+        position: relative;
+    }
+    .dt-ul li i{
+        margin-left: -4px;
+    }
+    .dt-ul li>a{
+        padding: 10px;
+        background: white;
+        border-bottom: 1px #eeeeee solid;
+        cursor: pointer;
+        width: 100%;
+        display: inline-block;
+    }
+    .dt-ul1 li>a{
+        padding-left: 30px;
+    }
+    .dt-ul2 li>a{
+        padding-left: 50px;
+    }
+    .dt-ul3 li>a{
+        padding-left: 70px;
+    }
+    input[name='department']{
+        position: absolute;
+        margin: 0;
+        width: 20px;
+        height: 20px;
+        right: 5px;
+        top: 10px;
+    }
+</style>
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="struc"></h4>
+            </div>
+            <div class="modal-body" style="padding: 0">
+                <ul class="dt-ul">
+                    <!--<li>1</li>-->
+                    <!--<li>2</li>-->
+                    <li ng-repeat="item in departmentList"><!--一级菜单-->
+                        <input type="radio" name="department" value="{{item.id}}" data-num="{{item.name}}" ng-model="copystructure"/>
+                        <a ng-click="item.flag = !item.flag"><i class="fa" ng-class="{true:'fa-caret-right',false:'fa-caret-down'}[item.flag]" ng-if="item.child != undefined"></i>&nbsp;&nbsp;{{item.name}} </a>
+                        <ul ng-if="item.child != undefined" class="dt-ul1" ng-show="!item.flag"><!--2级菜单-->
+                            <li ng-repeat="it in item.child">
+                                <input type="radio" name="department" value="{{it.id}}" data-num="{{it.name}}" ng-model="copystructure"/>
+                                <a ng-click="it.flag = !it.flag"><i class="fa" ng-class="{true:'fa-caret-right',false:'fa-caret-down'}[!it.flag]" ng-if="it.child != undefined"></i>&nbsp;&nbsp;{{it.name}} </a>
+                                <ul ng-if="it.child != undefined" class="dt-ul2" ng-show="it.flag"><!--3级菜单-->
+                                    <li ng-repeat="i in it.child">
+                                        <input type="radio" name="department" value="{{i.id}}" data-num="{{i.name}}" ng-model="copystructure"/>
+                                        <a ng-click="i.flag = !i.flag"><i class="fa" ng-class="{true:'fa-caret-right',false:'fa-caret-down'}[!i.flag]" ng-if="i.child != undefined"></i>&nbsp;&nbsp;{{i.name}}</a>
+                                        <ul ng-if="i.child != undefined" class="dt-ul3" ng-show="i.flag"><!--4级菜单-->
+                                            <li ng-repeat="is in i.child">
+                                                <input type="radio" name="department" value="{{is.id}}" data-num="{{is.name}}" ng-model="copystructure"/>
+                                                <a ng-click="is.flag = !is.flag">{{is.name}}</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <!--<span class="text-danger" ng-bind="usersError"></span>&nbsp;&nbsp;-->
+                <!--<button type="button" class="btn btn-success" ng-disabled="copyuserArr.username == null || copyuserArr.username == '' || copyuserArr.realname == null || copyuserArr.realname == '' || copyuserArr.position == null || copyuserArr.position == '' || copyuserArr.structure_id == null || copyuserArr.structure_id    == ''" ng-click="preservaConfirm()">保存</button>-->
+                <button type="button" class="btn btn-danger" ng-click="structuresList(false)">刷新数据</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-success" ng-click="deparFun()" >保存</button>
+            </div>
+        </div>
+    </div>
+<!--</div>-->

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html ng-app="Examine">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title></title>
+
+    <link href="../../css/bootstrap.min.css?t=20180208" rel="stylesheet">
+    <link href="../../css/font-awesome.min.css?t=20180208" rel="stylesheet">
+    <link href="../../css/plugins/bootstrap-table/bootstrap-table.min.css?t=20180208" rel="stylesheet">
+    <link href="../../css/animate.min.css?t=20180208" rel="stylesheet">
+    <link href="../../css/style.min.css?t=20180208" rel="stylesheet">
+
+    <base target="_blank">
+    <style>
+        .bg-color{
+            background: rgb(223, 240, 216) !important;
+        }
+        .modal-body{
+            max-height: 300px;
+            min-height: 300px;
+            overflow-x: hidden
+        }
+        .form-horizontal .form-group{
+            margin-bottom: 8px;
+        }
+        .form-horizontal .control-label,.form-group>div{
+            padding-left: 0;
+            padding-right: 0;
+        }
+        .datepicker.dropdown-menu{
+            z-index: 10000 !important;
+        }
+        .col-sm-2{
+            padding-right: 0;
+        }
+        .col-sm-2 select{
+            width:-webkit-fill-available !important;
+        }
+        .Proportion{
+            position: absolute;
+            top: 9px;
+            right: 4px;
+        }
+
+
+
+
+        .caret {
+            position: absolute;
+            top: 16px;
+            right: 7px;
+        }
+    </style>
+
+</head>
+
+<body class="gray-bg" ng-controller="ExamineCtrl">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <!-- Panel Other -->
+    <div class="ibox float-e-margins">
+        <div class="ibox-title">
+            <h5>数据审核</h5>
+            <div class="ibox-tools">
+                <a class="collapse-link">
+                    <i class="fa fa-chevron-up"></i>
+                </a>
+                <!--<a class="close-link">-->
+                    <!--<i class="fa fa-times"></i>-->
+                <!--</a>-->
+            </div>
+        </div>
+        <div class="ibox-content">
+            <div class="base-margin" id="query">
+                <form class="form-inline" role="form" method="post" id="queryForm" style="padding: 0 15px">
+                    <div class="row">
+                        <div class="row-block">
+                            <button class="btn btn-white pull-left" type="button" ng-click="doQuery()"><i class="fa fa-refresh"></i> 刷新</button>
+                            <div class="dropdown select_input" id="dropdown-channel">
+                                <input type="text" class="form-control input-s" ng-model="select.selectChannel" placeholder="-选择模块-" style="width:100%" data-id="dropdown-channel">
+                                <span class="caret1" ng-click="searchFun('dropdown-channel')">
+                                    <i class="fa fa-sort-desc"></i>
+                                </span>
+                                <ul class="dropdown-menu select_ul">
+                                    <li ng-repeat="item in ChannelList track by $index" ng-show="select.selectChannel === '' || item.name.includes(select.selectChannel) || !select.C_status"
+                                        ng-click="setChannel(item);">
+                                        <a title="{{item.name}}">{{item.name}}</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="input-group select_input">
+                                <input type="text" class="form-control demo-input" ng-model="Newdate1" id="date1" disabled>
+                                <span class="input-group-addon dateclick"><i class="fa fa-calendar dateicon" id="date_1"></i></span>
+                            </div>
+                            <div class="input-group select_input">
+                                <input type="text" class="form-control" ng-model="select.input" placeholder="申请人">
+                            </div>
+                            <button class="btn btn-success pull-left ml10" type="button" ng-click="search()"><i class="fa fa-search"></i> 搜索</button> &nbsp;
+                        </div>
+                        <div class="pull-right" style="margin-right: 16px">
+                            <button class="btn btn-white" type="button" data-toggle="modal" data-target="#audit" ng-disabled="!editState"><i class="fa fa-shield"></i> 审核</button>
+                            <button class="btn btn-white" type="button" ng-disabled="!editState" ng-click="editFun(1)"><i class="fa fa-newspaper-o"></i> 详情</button>
+                            <!--<button class="btn btn-white" type="button" ng-click="iconFun()"><i class="fa fa-download"></i> 下载</button>-->
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="btn-group col-sm-6 pl0">
+                            <button class="btn btn-white" type="button" ng-class="{'active':button.all}" ng-click="buttonFun('all')">全部状态</button>
+                            <button class="btn btn-white" type="button" ng-class="{'active':button.undetermined}" ng-click="buttonFun('undetermined',0)">待审核</button>
+                            <button class="btn btn-white" type="button" ng-class="{'active':button.success}" ng-click="buttonFun('success',1)"><span class="text-success">已审核</span></button>
+                            <button class="btn btn-white" type="button" ng-class="{'active':button.error}" ng-click="buttonFun('error',2)"><span class="text-danger">未通过</span></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="container"  style="width: 100%">
+                <table id="demo-table">
+                    <thead>
+                    <tr ng-click="tab()">
+                        <th data-formatter="numData"></th>
+                        <!-- <th data-formatter="checks"></th> -->
+                        <th data-field="module" data-formatter="modules">模块</th>
+                        <th data-field="structure">所属部门</th>
+                        <th data-field="status">审核状态</th>
+                        <th data-field="create_username">申请人</th>
+                        <th data-field="create_date">申请时间</th>
+                        <th data-field="update_date">操作时间</th>
+                    </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="modal inmodal" id="table_success" data-backdrop="static" tabindex="-1" role="dialog" aria-hidden="false">
+        <div ng-include="'../success.html'"></div>
+    </div>
+    <div class="modal fade" id="audit" tabindex="-1" role="dialog" aria-labelledby="auditLabel">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">审核处理</h4>
+                </div>
+                <div class="modal-body">
+                    <p>审核通过？</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-danger" ng-click="audit(2)">不通过</button>
+                    <button type="button" class="btn btn-success" ng-click="audit(1)">通过</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="details" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div ng-include="'detail/examine_alert.html'"></div>
+    </div>
+    <!-- End Panel Other -->
+    <!--<a href="#" id="country" data-type="checklist" data-title="Input country" data-source="[{ value: '1', text: '开启' },{ value: '0', text: '关闭' }]" data-value="0"><i class="fa fa-square-o"></i></a>-->
+</div>
+<script src="../../js/jquery.min.js?t=20180208"></script>
+<script src="../../js/bootstrap.min.js?t=20180208"></script>
+<script src="../../../js/content.min.js?t=20180208"></script>
+<script src="../../js/plugins/bootstrap-table/bootstrap-table.min.js?t=20180208"></script>
+<script src="../../js/plugins/bootstrap-table/bootstrap-table-mobile.min.js?t=20180208"></script>
+<script src="../../js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js?t=20180208"></script>
+<script src="../../js/plugins/angular/angular.min.js?t=20180208"></script>
+<script src="../../js/controller/examine/examine.js?t=20171221"></script>
+<script src="../../js/plugins/print/print.min.js?t=20180208"></script>
+<script src="../../js/plugins/fileSaver/fileSaver.min.js?t=20180208"></script>
+<script src="../../js/plugins/wordExport/wordExport.js?t=20180208"></script>
+<!--日历插件-->
+<script src="../../js/plugins/laydate/laydate.js?t=20180208"></script>
+</body>
+
+</html>

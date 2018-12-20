@@ -1,0 +1,235 @@
+<style>
+    .modal-body table{
+        margin: 0 auto;
+    }
+    .modal-body tr td{
+        padding: 8px;
+    }
+    .modal-body tr td:nth-child(1){
+        text-align: right;
+    }
+    .modal-body{
+        max-height: 300px;
+        overflow-x: hidden
+    }
+    .modal-body h1{
+        text-align: center;
+        margin-top: -5px;
+        font-size: 20px;
+    }
+    #showmenu{
+        background-color: #888888;
+        padding: 5px 10px;
+        cursor: pointer;
+        color: #fff;
+    }
+</style>
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            <h4 class="modal-title">{{moduleName}}</h4>
+        </div>
+        <div class="modal-body" style="max-height: 600px">
+            <div class="dropdown" ng-if="showmenuS != 1">
+                <a class="dropdown-toggle" id="showmenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                    操作V
+                    <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="showmenu">
+                    <li><a ng-click="printAll()">打印全部...</a></li>
+                    <li><a ng-click="printContent()">只打印内容...</a></li>
+                    <li><a ng-click="wordExport()">另存为word...</a></li>
+                    <li><a ng-click="hideModal()">关闭</a></li>
+                    <li><a ng-click="editFun(1)">刷新</a></li>
+                </ul>
+            </div>
+            <h1>{{moduleName}}</h1>
+            <span class="varify text-center" ng-if="copyexamineArr.verify_status === 1">已审核</span>
+            <span class="varify text-center varify-danger" ng-if="copyexamineArr.verify_status === 2">未通过</span>
+            <div ng-if="examineArr.module === 10 && Url_examine != 1" ng-include="'detail/channel.html'"></div>
+            <div ng-if="examineArr.module === 20 && Url_examine != 1" ng-include="'detail/content_provide.html'"></div>
+            <div ng-if="examineArr.module === 30 && Url_examine != 1" ng-include="'detail/issue.html'"></div>
+            <div ng-if="examineArr.module === 40 && Url_examine != 1" ng-include="'detail/payment.html'"></div>
+            <div ng-if="examineArr.module === 50 && Url_examine != 1" ng-include="'detail/address.html'"></div>
+            <div ng-if="examineArr.module === 60 && Url_examine != 1" ng-include="'detail/project.html'"></div>
+            <div ng-if="examineArr.module === 70 && Url_examine != 1" ng-include="'detail/product.html'"></div>
+            <div ng-if="examineArr.module === 80 && Url_examine != 1" ng-include="'detail/product_channel.html'"></div>
+            <div ng-if="examineArr.module === 90 && Url_examine != 1" ng-include="'detail/operate.html'"></div>
+            <div ng-if="examineArr.module === 100 && Url_examine != 1" ng-include="'detail/business.html'"></div>
+            <div ng-if="examineArr.module === 210 && Url_examine != 1" ng-include="'detail/atr.html'"></div>
+
+            <div ng-if="examineArr.module === 10 && Url_examine == 1" ng-include="'page/examine/detail/channel.html'"></div>
+            <div ng-if="examineArr.module === 20 && Url_examine == 1" ng-include="'page/examine/detail/content_provide.html'"></div>
+            <div ng-if="examineArr.module === 30 && Url_examine == 1" ng-include="'page/examine/detail/issue.html'"></div>
+            <div ng-if="examineArr.module === 40 && Url_examine == 1" ng-include="'page/examine/detail/payment.html'"></div>
+            <div ng-if="examineArr.module === 50 && Url_examine == 1" ng-include="'page/examine/detail/address.html'"></div>
+            <div ng-if="examineArr.module === 60 && Url_examine == 1" ng-include="'page/examine/detail/project.html'"></div>
+            <div ng-if="examineArr.module === 70 && Url_examine == 1" ng-include="'page/examine/detail/product.html'"></div>
+            <div ng-if="examineArr.module === 80 && Url_examine == 1" ng-include="'page/examine/detail/product_channel.html'"></div>
+            <div ng-if="examineArr.module === 90 && Url_examine == 1" ng-include="'page/examine/detail/operate.html'"></div>
+            <div ng-if="examineArr.module === 100 && Url_examine == 1" ng-include="'page/examine/detail/business.html'"></div>
+            <div ng-if="examineArr.module === 210 && Url_examine == 1" ng-include="'page/examine/detail/atr.html'"></div>
+            <div class="ibox float-e-margins" id="deal-list" ng-show="copyexamineArr.dealList.length != '' || copyexamineArr.dealList.length != 0">
+                <div class="ibox-title" style="border: none">
+                    <h5>处理记录({{ copyexamineArr.dealList.length }})</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link" ng-click="dealA()">
+                            <i class="fa fa-chevron-down"></i>
+                        </a>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content" style="display: none">
+                    <table id="deal-table">
+                        <thead>
+                        <tr ng-click="tab()">
+                            <th data-field="id">序号</th>
+                            <th data-field="deal_action">动作</th>
+                            <th data-field="deal_user_name">处理人</th>
+                            <th data-field="deal_status">状态</th>
+                            <th data-field="">说明</th>
+                            <th data-field="deal_time">时间</th>
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+            <div class="ibox float-e-margins" ng-if="(copyexamineArr.verify_status == 0 || copyexamineArr.verify_status == 2) && examineArr.message_type != 10">
+                <div class="ibox-title" style="border: none">
+                    <h5>审核处理</h5>
+                    <div class="ibox-tools">
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <table border="1" width="97%">
+                        <tbody>
+                        <tr>
+                            <td width="30%">
+                                <span class="text-danger">*</span>处理动作</td>
+                            <td>
+                                <label>
+                                    <input type="radio" name="examine" value="1" ng-model="examineArr.status">通过</label>
+                                <label>
+                                    <input type="radio" name="examine" value="2" ng-model="examineArr.status">未通过</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>说明:</td>
+                            <td>
+                                <textarea rows="3" cols="42" style="resize: none;" ng-model="examineArr.description"></textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>
+                                <button type="button" class="btn btn-sm btn-success" ng-click="examine()">提交处理</button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="ibox float-e-margins" ng-if="copyexamineArr.verify_flag == 10 && examineArr.module == 210">
+                <div class="ibox-title" style="border: none">
+                    <h5>审核处理</h5>
+                    <div class="ibox-tools">
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <table border="1" width="97%">
+                        <tbody>
+                        <tr>
+                            <td width="30%">
+                                <span class="text-danger">*</span>处理动作</td>
+                            <td>
+                                <label>
+                                    <input type="radio" name="examine" value="20" ng-model="copyexamineArr1.verify_flag">通过</label>
+                                <label>
+                                    <input type="radio" name="examine" value="30" ng-model="copyexamineArr1.verify_flag">未通过</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="30%">
+                                <span class="text-danger">*</span>需求优先级</td>
+                            <td>
+                                <select class="form-control" ng-model="copyexamineArr1.demand_level" style="width:174px">
+                                    <option value="">-需求优先级-</option>
+                                    <option value="1">-低-</option>
+                                    <option value="2">-中-</option>
+                                    <option value="3">-高-</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>设计美术:</td>
+                            <td>
+                                <div class="col-sm-10 col-md-4" style="padding-left: 0">
+                                    <!--<div class="input-group">-->
+                                        <!--<input type="text" class="form-control" ng-model="copyexamineArr1.exce_username" disabled style="width:100px">-->
+                                        <!--<span class="input-group-addon" ng-click="delp_name('exce_user_id','exce_username')">-->
+                                            <!--<i class="fa fa-close"></i>-->
+                                        <!--</span>-->
+                                        <!--<span class="input-group-addon" ng-click="charges('exce_user_id','exce_username')">-->
+                                            <!--<i class="fa fa-search"></i>-->
+                                        <!--</span>-->
+                                    <!--</div>-->
+                                    <select class="form-control" ng-model="copyexamineArr1.exce_user_id" ng-change="setProject()" style="width:174px">
+                                        <option value="">-选择美术-</option>
+                                        <option ng-repeat="item in Channel_s track by $index" value="{{item.id}}" title="{{item.realname}}">{{item.realname}}</option>
+                                    </select>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>说明:</td>
+                            <td>
+                                <textarea rows="3" cols="42" style="resize: none;" ng-model="copyexamineArr1.description"></textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>
+                                <button type="button" class="btn btn-sm btn-success" ng-click="examine()">提交处理</button>&nbsp;&nbsp;<span class="text-danger">{{usersError}}</span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="ibox float-e-margins" id="access-list">
+                <div class="ibox-title" style="border: none">
+                    <h5>查阅记录</h5>
+                    <div class="ibox-tools">
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <div class="row">
+                        <div class="col-md-2" ng-repeat="user in copyexamineArr.accessList">
+                            <div class="thumbnail text-center">
+                                <!--<img class="img-circle" ng-src="{{ 'http://localhost/pailediOa/img/user.png' }}" alt="{{ user.access_username }}">-->
+                                <div class="caption" style="padding: 9px 0 0 0">
+                                    <small>{{ user.access_username }}</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="charge_radioModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div ng-include="'/page/charge_radio.html'"></div>
+</div>

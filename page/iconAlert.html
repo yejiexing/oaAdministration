@@ -1,0 +1,27 @@
+<div class="modal-dialog modal-sm" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <h4 class="modal-title">选择Excel文件</h4>
+        </div>
+        <div class="modal-body" style="min-height:initial">
+            <div class="form-group">
+                <input id="iconFile" type="file" onchange="angular.element(this).scope().checkFile(this.files[0],$(this))">
+            </div>
+            <div class="sk-spinner sk-spinner-wave" ng-show="uploading">
+                <div class="sk-rect1"></div>
+                <div class="sk-rect2"></div>
+                <div class="sk-rect3"></div>
+                <div class="sk-rect4"></div>
+                <div class="sk-rect5"></div>
+            </div>
+            <button type="button" class="btn btn-xs btn-success" ng-click="dome()">下载模板</button>
+        </div>
+        <div class="modal-footer">
+            <span class="text-danger" ng-bind="usersError"></span>&nbsp;&nbsp;
+            <button type="button" class="btn btn-success" ng-disabled="usersError !== '' || uploading" ng-click="import()">导入</button>
+        </div>
+    </div>
+</div>

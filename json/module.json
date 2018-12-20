@@ -1,0 +1,42 @@
+[
+    {
+        "id": 10,
+        "module_name": "渠道"
+    },
+    {
+        "id": 20,
+        "module_name": "CP研发公司"
+    },
+    {
+        "id": 30,
+        "module_name": "发行公司"
+    },
+    {
+        "id": 40,
+        "module_name": "支付渠道"
+    },
+    {
+        "id": 50,
+        "module_name": "通讯录"
+    },
+    {
+        "id": 60,
+        "module_name": "项目"
+    },
+    {
+        "id": 70,
+        "module_name": "产品"
+    },
+    {
+        "id": 80,
+        "module_name": "上线渠道"
+    },
+    {
+        "id": 90,
+        "module_name": "运营数据"
+    },
+    {
+        "id": 100,
+        "module_name": "商务数据"
+    }
+]

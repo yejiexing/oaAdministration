@@ -1,0 +1,26 @@
+<div class="modal-dialog modal-sm" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <h4 class="modal-title">{{updateHead}}</h4>
+        </div>
+        <div class="modal-body" style="max-height: 232px;min-height: 232px;">
+            <label class="control-label text-right">是否收票：</label>
+            <select class="form-control" ng-model="updateInfoArr.is_invoice" ng-change="setProject()">
+                <option value="0">否</option>
+                <option value="1">是</option>
+            </select>
+            <br>
+            <label class="ccontrol-labeltext-right">发票号：</label>
+            <div>
+                <input type="text" class="form-control" ng-model="updateInfoArr.invoice_number">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <span class="text-danger" ng-bind="updateError"></span>&nbsp;&nbsp;
+            <button type="button" class="btn btn-success" ng-click="updateInfoFun()">保存</button>
+        </div>
+    </div>
+</div>

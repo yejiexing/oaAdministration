@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html ng-app="sysMenu">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title></title>
+
+    <link href="../../css/bootstrap.min.css?t=20180208" rel="stylesheet">
+    <link href="../../css/bootstrap-editable.css?t=20180208" rel="stylesheet">
+    <link href="../../css/font-awesome.min.css?t=20180208" rel="stylesheet">
+    <link href="../../css/plugins/bootstrap-table/bootstrap-table.min.css?t=20180208" rel="stylesheet">
+    <link href="../../css/animate.min.css?t=20180208" rel="stylesheet">
+    <link href="../../css/style.min.css?t=20180208" rel="stylesheet">
+
+    <base target="_blank">
+    <style>
+        .bg-color{
+            background: rgb(223, 240, 216) !important;
+        }
+        .modal-body{
+            max-height: 300px;
+            min-height: 300px;
+            overflow-x: hidden
+        }
+        .form-horizontal .form-group{
+            margin-bottom: 8px;
+        }
+        .form-horizontal .control-label,.form-group>div{
+            padding-left: 0;
+            padding-right: 0;
+        }
+        .datepicker.dropdown-menu{
+            z-index: 10000 !important;
+        }
+        .mb-10{
+            margin-bottom: 10px;
+        }
+
+    </style>
+</head>
+
+<body class="gray-bg" ng-controller="sysMenuCtrl">
+<div class="wrapper wrapper-content animated fadeInRight" >
+    <!-- Panel Other -->
+    <div class="ibox float-e-margins">
+        <div class="ibox-title">
+            <h5>菜单管理</h5>
+            <div class="ibox-tools">
+                <a class="collapse-link">
+                    <i class="fa fa-chevron-up"></i>
+                </a>
+            </div>
+        </div>
+        <div class="ibox-content">
+            <div class="base-margin" id="query">
+                <form class="form-inline" role="form" method="post" id="queryForm" style="padding: 0 15px">
+                    <div class="form-group">
+                            <button class="btn btn-white" type="button" ng-click="newtopFun()" ng-if="save"><i class="fa fa-plus"></i> 新增顶级</button>
+                            <button class="btn btn-white" type="button" ng-disabled="!newState" ng-click="NewlyAdded()" ng-if="save"><i class="fa fa-plus"></i> 新增下级</button>
+                            <button class="btn btn-white" type="button" ng-click="doQuery()"><i class="fa fa-refresh"></i> 刷新</button>
+                    </div>
+
+                    <div class="form-group pull-right">
+                            <button class="btn btn-danger" type="button" ng-disabled="!deleteState" ng-click="deleteFun()" ng-if="delete"><i class="fa fa-trash-o"></i>  删除</button>
+                            <button class="btn btn-white" type="button" ng-disabled="!editState" ng-click="editFun()" ng-if="update"><i class="fa fa-edit"></i> 编辑</button>
+                    </div>
+                    <!--<div class="form-group">-->
+                        <!--<button type="button" id="queryBtn" onclick="doQuery();" class="btn btn-primary">查询</button>-->
+                    <!--</div>-->
+                    <!--<div class="form-group btn-right">-->
+                        <!--<button type="button" class="btn btn-primary" id="addBtn" onclick="addUser();">新增用户</button>-->
+                    <!--</div>-->
+                </form>
+            </div>
+            <div class="container" style="width: 100%">
+                <table id="demo-table">
+                    <thead>
+                    <tr ng-click="tab()">
+                        <th data-formatter="numData" data-events="numEvents"></th>
+                        <th data-field="title" data-formatter="titleData">菜单名称</th>
+                        <th data-field="rule_id">权限标识</th>
+                        <th data-field="url" data-formatter="urlData">URL</th>
+                        <th data-field="pid">PID</th>
+                        <th data-field="icon" data-formatter="iconData">图标</th>
+                        <th data-field="status" data-formatter="statusData" data-events="statusEvents">启用</th>
+                        <!--<th data-field="is_admin">验证</th>-->
+                        <!--<th data-field="login_time">显示首页</th>-->
+                        <th data-field="sort" data-formatter="sortData">排序号</th>
+                        <!--<th data-field="telephone">颜色</th>-->
+                        <th data-field="id">ID</th>
+                    </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!-- End Panel Other -->
+    <div class="modal inmodal" id="table_delete" data-backdrop="static" tabindex="-1" role="dialog" aria-hidden="false">
+        <div ng-include="'../deletealert.html'"></div>
+    </div>
+    <div class="modal fade" id="preservaModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title"><span id="myModalLabel"></span></h4>
+                </div>
+                <div class="modal-body">
+                    <form method="get" class="form-horizontal">
+                        <div class="form-group">
+                            <label class="col-sm-2 col-md-2 control-label text-right"><span class="text-danger">*</span>菜单名称：</label>
+                            <div class="col-sm-4 col-md-4">
+                                <input type="text" class="form-control" ng-model="copymenuArr.title">
+                            </div>
+                            <label class="col-sm-2 col-md-2 control-label text-right">权限标识：</label>
+                            <div class="col-sm-4 col-md-4">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" ng-model="copymenuArr.rule_id" disabled><span class="input-group-addon" ng-click="newstrucFun()"><i class="fa fa-search"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 col-md-2 control-label text-right">URL地址：</label>
+                            <div class="col-sm-4 col-md-4">
+                                <input type="text" class="form-control" ng-model="copymenuArr.url">
+                            </div>
+                            <label class="col-sm-2 col-md-2 control-label text-right">图标：</label>
+                            <div class="col-sm-4 col-md-4">
+                                <input type="text" class="form-control" ng-model="copymenuArr.icon">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 col-md-2 control-label text-right"><span class="text-danger">*</span>上级ID：</label>
+                            <div class="col-sm-4 col-md-4">
+                                <input type="number" class="form-control" ng-model="copymenuArr.pid">
+                            </div>
+                            <label class="col-sm-2 col-md-2 control-label text-right">状态：</label>
+                            <div class="col-sm-4 col-md-4">
+                                <!--<input type="checkbox"  ng-model="copymenuArr.status"><i></i>-->
+                                <!--<div class="checkbox i-checks">-->
+                                    <input type="checkbox" value="" style="margin-top: 8px" ng-checked="copymenuArr.status == 1" ng-click="menuche()">
+                                <!--</div>-->
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 col-md-2 control-label text-right">排序：</label>
+                            <div class="col-sm-4 col-md-4">
+                                <input type="number" class="form-control" ng-model="copymenuArr.sort">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <span class="text-danger" ng-bind="usersError"></span>&nbsp;&nbsp;
+                    <button type="button" class="btn btn-success" ng-disabled="copymenuArr.title == undefined || copymenuArr.title == ''" ng-click="preservaConfirm()">保存</button>
+                    <!--<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>-->
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="departmentModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div ng-include="'../structure.html'"></div>
+    </div>
+
+    <div class="popover fade top in editable-container editable-popup" role="tooltip" id="popoverstate">
+            <div class="arrow" style="left: 21.5686%;"></div>
+            <h3 class="popover-title">启用</h3>
+            <div class="popover-content"> <div>
+                <div class="editableform-loading" style="display: none;"></div>
+                <form class="form-inline editableform" style="">
+                    <div class="control-group form-group">
+                        <div>
+                            <div class="editable-input">
+                                <div class="editable-checklist">
+                                    <div>
+                                        <label><input id="pop_che" type="checkbox" value="1"><span>启用</span></label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="editable-buttons">
+                                <button type="submit" class="btn btn-primary btn-sm editable-submit" ng-click="stateedit()">
+                                    <i class="glyphicon glyphicon-ok"></i>
+                                </button>
+                                <button type="button" class="btn btn-default btn-sm editable-cancel" ng-click="statedelete()">
+                                    <i class="glyphicon glyphicon-remove"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="editable-error-block help-block" style="display: none;">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            </div>
+        </div>
+</div>
+<script src="../../js/jquery.min.js?t=20180208"></script>
+<script src="../../js/bootstrap.min.js?t=20180208"></script>
+<script src="../../js/bootstrap-editable.min.js?t=20180208"></script><!--表格行内编辑插件-->
+<script src="../../js/content.min.js?t=20180208"></script>
+<script src="../../js/plugins/bootstrap-table/bootstrap-table.min.js?t=20180208"></script>
+<script src="../../js/plugins/bootstrap-table/bootstrap-table-mobile.min.js?t=20180208"></script>
+<script src="../../js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js?t=20180208"></script>
+<script src="../../js/plugins/angular/angular.min.js?t=20180208"></script>
+<script src="../../js/controller/sysyem/sys_menu.js?t=20171120"></script>
+</body>
+
+</html>

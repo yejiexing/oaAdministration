@@ -1,0 +1,46 @@
+<ul>
+    <li>
+        <div class="table-div">
+            <span><input name="all" type="checkbox" ng-click="checkFun()"/></span>
+            <span><b>权限标题</b></span>
+            <span><b>标识</b></span>
+        </div>
+    </li>
+    <li ng-repeat="item in rulesList">
+        <div class="table-div">
+            <span><input name="groups-che" type="checkbox" ng-checked="item.check" value="{{item.id}}" ng-click="cherowFun(item,item.id)"/></span>
+            <span style="white-space:pre;" ng-click="item.flag = !item.flag" title="{{item.title}}"><i class="fa" ng-class="{true:'fa-caret-right',false:'fa-caret-down'}[item.flag]" ng-if="item.child != undefined"></i>{{item.title}}</span>
+            <span ng-click="item.flag = !item.flag">{{item.iden}}</span>
+        </div>
+        <ul ng-if="item.child != undefined" ng-show="item.flag">
+            <li ng-repeat="it in item.child">
+                <div class="table-div" >
+                    <span><input name="groups-che" type="checkbox" ng-checked="it.check" value="{{it.id}}" ng-click="cherowFun(it,item.id)"/></span>
+                    <span style="text-indent: 1em" ng-click="it.flag = !it.flag" title="{{it.title}}"><i class="fa" ng-class="{true:'fa-caret-right',false:'fa-caret-down'}[it.flag]" ng-if="it.child != undefined"></i>{{it.title}}</span>
+                    <span style="text-indent: 1em" ng-click="it.flag = !it.flag">{{it.iden}}</span>
+                </div>
+                <ul ng-if="it.child != undefined" ng-show="it.flag">
+                    <li ng-repeat="i in it.child">
+                        <div class="table-div">
+                            <span><input name="groups-che" type="checkbox" ng-checked="i.check" value="{{i.id}}" ng-click="cherowFun(i,item.id)"/></span>
+                            <span style="text-indent: 2em" ng-click="i.flag = !i.flag" title="{{i.title}}"><i class="fa" ng-class="{true:'fa-caret-right',false:'fa-caret-down'}[i.flag]" ng-if="i.child != undefined"></i>{{i.title}}</span>
+                            <span style="text-indent: 2em" ng-click="i.flag = !i.flag">{{i.iden}}</span>
+                        </div>
+                        <ul ng-if="i.child != undefined" ng-show="i.flag">
+                            <li ng-repeat="i4 in i.child">
+                                <div class="table-div">
+                                    <span><input name="groups-che" type="checkbox" ng-checked="i4.check" value="{{i4.id}}" ng-click="cherowFun(i4,item.id)"/></span>
+                                    <span style="text-indent: 4em" title="{{i4.title}}">{{i4.title}}</span>
+                                    <span style="text-indent: 3em">{{i4.iden}}</span>
+                                </div>
+                                <!--<ul>-->
+
+                                <!--</ul>-->
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </li>
+</ul>

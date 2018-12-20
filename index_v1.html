@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html ng-app="homePages">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!--360浏览器优先以webkit内核解析-->
+
+
+    <title></title>
+
+    <!--<link rel="shortcut icon" href="favicon.ico">-->
+    <link href="css/bootstrap.min.css?t=20180208" rel="stylesheet">
+    <link href="css/plugins/bootstrap-table/bootstrap-table.min.css?t=20180208" rel="stylesheet">
+    <link href="css/font-awesome.min.css?t=20180208" rel="stylesheet">
+
+    <link href="css/animate.min.css?t=20180208" rel="stylesheet">
+    <link href="css/style.min.css?t=20180208" rel="stylesheet">
+    <base target="_blank">
+    <style>
+        ul,li{
+            list-style: none;
+        }
+        .homelishow {
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            display: none;
+        }
+        .homelishow li{
+            width: 120px;
+            height: 90px;
+            padding-top: 20px;
+            float: left;
+            margin-left: 20px;
+            margin-top: 20px;
+        }
+        .homeiconss2>div{
+            color: #fff;
+            font-size: 14px;
+            text-align: center;
+        }
+        .div01>i{
+            font-size: 40px;
+        }
+        .ibox-content1{
+            max-height: 330px;
+            overflow-x: hidden;
+            display: none;
+        }
+        .ibox-content1>div{
+            margin-bottom: 5px;
+        }
+        .modal-body h1{
+            text-align: center;
+            font-size: 18px;
+            margin: 0;
+        }
+        @media (max-width:768px) {
+            .homelishow li{
+                width: 30%;
+                margin-left: 10px;
+            }
+            .homelishow .nomargin{
+                margin-left: 6px;
+            }
+
+        }
+        .home_div{
+            margin-bottom: 10px;
+        }
+        .home_div .ibox-content{
+            padding-bottom: 10px;
+            min-height: 325px;
+            /*max-height: 325px;*/
+        }
+        .bootstrap-table table thead tr th:first-child,.bootstrap-table table tr td:first-child{
+            width: 140px    ;
+        }
+    </style>
+</head>
+
+<body class="gray-bg" ng-controller="homePageCtrl">
+<div class="wrapper wrapper-content animated fadeInRight" >
+    <!-- Panel Other -->
+    <div class="row" style="margin-bottom: 30px">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>快捷操作</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <!--<a class="close-link">-->
+                            <!--<i class="fa fa-times"></i>-->
+                        <!--</a>-->
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <ul class="homelishow">
+                        <li style="background-color:{{item.color}}" class="J_homenav" data-id="{{item.url}}" data-text="{{item.content}}" ng-repeat="item in rules" ng-click="J_homenav(item)" ng-if="item.state">
+                            <a class="homeiconss">
+                                <div class="homeiconss2">
+                                    <div class="div01"><i class="fa {{item.icon}}"></i></div>
+                                    <div>{{item.content}}<div></div></div>
+                                </div>
+                            </a>
+                        </li>
+                        <li style="background-color:#888888" class="nomargin" id="Home_Refresh">
+                            <a class="homeiconss">
+                                <div class="homeiconss2">
+                                    <div class="div01"><i class="fa fa-refresh"></i></div>
+                                    <div><span id="Home_date">60</span>秒后刷新</div>
+                                </div>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <!--<div class="col-sm-6 home_div" ng-show="messageList.length != ''">-->
+            <!--<div class="ibox float-e-margins">-->
+                <!--<div class="ibox-title">-->
+                    <!--<h5>通知公告</h5>-->
+                    <!--<div class="ibox-tools">-->
+                        <!--<a class="collapse-link">-->
+                            <!--<i class="fa fa-chevron-up"></i>-->
+                        <!--</a>-->
+                    <!--</div>-->
+                <!--</div>-->
+                <!--<div class="ibox-content ibox-content1" ng-show="messageList.length != ''">-->
+                    <!--<div ng-repeat="item in messageList track by $index" ng-click="message($index,item)" ng-if="!item.is_flag">-->
+                        <!--<a class="list-group-item">◇【{{item.type}}】{{item.title}}[{{item.send_time}}]<span class="pull-right text-success">点击查看</span></a>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</div>-->
+        <div class="col-sm-6 home_div">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>昨日数据</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <!--<a class="close-link">-->
+                            <!--<i class="fa fa-times"></i>-->
+                        <!--</a>-->
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <table id="demo-table1">
+                        <thead>
+                        <tr ng-click="tab()">
+                            <th data-field="project">项目</th>
+                            <th data-field="new_arrivals">新增</th>
+                            <th data-field="new_chain">新增环比</th>
+                            <th data-field="active_users">活跃</th>
+                            <th data-field="operate_amount">充值金额</th>
+                            <th data-field="pay_chain">充值环比</th>
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 home_div">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>本月数据</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <!--<a class="close-link">-->
+                            <!--<i class="fa fa-times"></i>-->
+                        <!--</a>-->
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <table id="demo-table2">
+                        <thead>
+                        <tr ng-click="tab()">
+                            <th data-field="project">项目</th>
+                            <th data-field="new_arrivals">新增</th>
+                            <th data-field="new_chain">新增环比</th>
+                            <th data-field="active_users">活跃</th>
+                            <th data-field="operate_amount">充值金额</th>
+                            <th data-field="pay_chain">充值环比</th>
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <!--<div class="modal fade" id="details" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">-->
+        <!--<div class="modal-dialog">-->
+            <!--<div class="modal-content">-->
+                <!--<div class="modal-header">-->
+                    <!--<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>-->
+                    <!--<h4 class="modal-title">通知公告</h4>-->
+                <!--</div>-->
+                <!--<div class="modal-body" style="max-height: 600px">-->
+                    <!--&lt;!&ndash;<h1>cp公司录入</h1>&ndash;&gt;-->
+                    <!--<div class="padding10 pcont" align="left">-->
+                        <!--<div style="font-size:18px;" align="center" ng-bind="contentList.title"></div>-->
+                        <!--<div style="font-size:12px;color:#888888;">[{{contentList.type}}] {{contentList.send_time}}</div>-->
+                        <!--<div><p>12312312</p></div>-->
+                        <!--<div align="right">{{contentList.create_username}}<br>{{contentList.send_time}}</div>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</div>-->
+    <div class="modal fade" id="details" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div ng-include="'page/examine/detail/examine_alert.html'"></div>
+    </div>
+    <div class="modal inmodal" id="table_success" data-backdrop="static" tabindex="-1" role="dialog" aria-hidden="false">
+        <div ng-include="'page/success.html'"></div>
+    </div>
+
+
+</div>
+
+<script src="js/jquery.min.js?v=20180208"></script>
+<script src="js/plugins/angular/angular.min.js?v=20180208"></script>
+<script src="js/bootstrap.min.js?v=20180208"></script>
+<script src="js/plugins/layer/layer.min.js?v=20180208"></script>
+<script src="js/plugins/bootstrap-table/bootstrap-table.min.js?v=20180208"></script>
+<script src="js/plugins/bootstrap-table/bootstrap-table-mobile.min.js?v=20180208"></script>
+<script src="js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js?v=20180208"></script>
+<script src="js/content.min.js?v=20180208"></script>
+<!--<script src="js/Base64.js?v=20180208"></script>-->
+<!--<script src="js/config.js?v=20180208"></script>-->
+<script src="js/controller/homepage.js?v=20180319"></script>
+</body>
+
+</html>

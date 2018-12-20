@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html ng-app="proProject">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title></title>
+
+    <link href="../../../css/bootstrap.min.css?t=20180208" rel="stylesheet">
+    <link href="../../../css/font-awesome.min.css?t=20180208" rel="stylesheet">
+    <link href="../../../css/plugins/bootstrap-table/bootstrap-table.min.css?t=20180208" rel="stylesheet">
+    <link href="../../../css/animate.min.css?t=20180208" rel="stylesheet">
+    <link href="../../../css/style.min.css?t=20180208" rel="stylesheet">
+
+    <base target="_blank">
+    <style>
+        .bg-color{
+            background: rgb(223, 240, 216) !important;
+        }
+        .modal-body{
+            max-height: 300px;
+            min-height: 300px;
+            overflow-x: hidden
+        }
+        .form-horizontal .form-group{
+            margin-bottom: 8px;
+        }
+        .form-horizontal .control-label,.form-group>div{
+            padding-left: 0;
+            padding-right: 0;
+        }
+        .datepicker.dropdown-menu{
+            z-index: 10000 !important;
+        }
+        .col-sm-2{
+            padding-right: 0;
+        }
+        .col-sm-2 select{
+            width:-webkit-fill-available !important;
+        }
+        .Proportion{
+            position: absolute;
+            top: 9px;
+            right: 4px;
+        }
+        .modal-body h1{
+            text-align: center;
+            margin-top: -5px;
+            font-size: 20px;
+        }
+        .modal-body table{
+            margin: 0 auto;
+        }
+        .modal-body tr td{
+            padding: 8px;
+        }
+        .modal-body tr td:nth-child(1){
+            text-align: right;
+        }
+        #showmenu{
+            background-color: #888888;
+            padding: 5px 10px;
+            cursor: pointer;
+            color: #fff;
+        }
+
+        .caret {
+            position: absolute;
+            top: 16px;
+            right: 7px;
+        }
+    </style>
+
+</head>
+
+<body class="gray-bg" ng-controller="proProjectCtrl">
+<div class="wrapper wrapper-content animated fadeInRight" >
+    <!-- Panel Other -->
+    <div class="ibox float-e-margins">
+        <div class="ibox-title">
+            <h5>项目录入</h5>
+            <div class="ibox-tools">
+                <a class="collapse-link">
+                    <i class="fa fa-chevron-up"></i>
+                </a>
+            </div>
+        </div>
+        <div class="ibox-content">
+            <div class="base-margin" id="query">
+                <form class="form-inline" role="form" method="post" id="queryForm" style="padding: 0 15px">
+                    <div class="row">
+                        <div class="row-block">
+                            <button class="btn btn-white pull-left" type="button" ng-click="NewlyAdded()" ng-if="save"><i class="fa fa-plus"></i> 新增</button> &nbsp;
+                            <div class="dropdown select_input" ng-show="index" id="dropdown-channel">
+                                <input type="text" class="form-control input-s" ng-model="select.selectChannel" placeholder="-选择项目-" style="width:100%" data-id="dropdown-channel">
+                                <span class="caret1" ng-click="searchFun('dropdown-channel')"><i class="fa fa-sort-desc"></i></span>
+                                <ul class="dropdown-menu select_ul">
+                                    <li ng-repeat="item in ChannelList track by $index" ng-show="select.selectChannel === '' || item.includes(select.selectChannel) || !select.C_status" ng-click="setChannel(item)">
+                                        <a title="{{item}}">{{item}}</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="dropdown select_input" id="dropdown-company" ng-show="index">
+                                <input type="text" class="form-control" ng-model="select.selectCompany" placeholder="-选择项目类型-" style="width:100%" data-id="dropdown-company">
+                                <span class="caret1" ng-click="searchFun('dropdown-company')"><i class="fa fa-sort-desc"></i></span>
+                                <ul class="dropdown-menu select_ul" aria-labelledby="dropdown-company">
+                                    <li ng-repeat="item in CompanyList track by $index" ng-show="select.selectCompany === '' || item.includes(select.selectCompany)|| !select.C_status"
+                                        ng-click="setCompany(item)">
+                                        <a title="{{item}}">{{item}}</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="dropdown select_input" id="dropdown-region" ng-show="index">
+                                <input type="text" class="form-control" ng-model="select.selectRegion" placeholder="-选择研发CP-"
+                                    style="width:100%" data-id="dropdown-region">
+                                <span class="caret1" ng-click="searchFun('dropdown-region')"><i class="fa fa-sort-desc"></i></span>
+                                <ul class="dropdown-menu select_ul" aria-labelledby="dropdown-region">
+                                    <li ng-repeat="item in RegionList track by $index" ng-show="select.selectRegion === '' || item.includes(select.selectRegion)|| !select.C_status" ng-click="setRegion(item)">
+                                        <a title="{{item}}">{{item}}</a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <br class="br_show">
+                            <button class="btn btn-success pull-left ml10" type="button" ng-click="search()" ng-if="index"><i class="fa fa-search"></i> 搜索</button> &nbsp;
+                        </div>
+                        <div class="pull-right edit-button">
+                            <button class="btn btn-white" type="button" ng-click="doQuery()"><i class="fa fa-refresh"></i> 刷新</button>
+                            <button class="btn btn-white" type="button" ng-disabled="!editState" ng-click="editFun()" ng-if="update"><i class="fa fa-edit"></i> 编辑</button>
+                            <button class="btn btn-danger" type="button" ng-disabled="!deleteState" ng-click="deleteFun()" ng-if="delete"><i class="fa fa-trash-o"></i> 删除</button>
+                            <button class="btn btn-white" type="button" ng-disabled="!editState" ng-click="editFun(1)" ng-if="read"><i class="fa fa-newspaper-o"></i> 详情</button>
+                            <button class="btn btn-white" type="button" ng-click="export()" ng-if="isexport"><i class="fa fa-download"></i> 下载</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="container" style="width: 100%">
+                <table id="demo-table">
+                    <thead>
+                    <tr ng-click="tab()">
+                        <!--<th data-formatter="numData"></th>-->
+                        <th data-checkbox="true"></th>
+                        <th data-field="project_name">项目名称</th>
+                        <th data-field="project_type">项目类型</th>
+                        <th data-field="content_provider">研发CP</th>
+                        <th data-field="operate_incharge">运营负责人</th>
+                        <th data-field="business_incharge">商务负责人</th>
+                        <th data-field="finance_incharge">财务负责人</th>
+                        <th data-field="data_view">数据查看人</th>
+                        <th data-field="data_add">数据录入人</th>
+                        <th data-field="data_examine">审核负责人</th>
+                        <th data-field="closing_period">结算周期</th>
+                        <th data-field="bill_date">出对账单日</th>
+                        <th data-field="invoice_date">收发票日</th>
+                        <th data-field="announce_users">微信通知</th>
+                        <!--<th data-field="business_announce_users">微信商务通知</th>-->
+                    </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="modal inmodal" id="table_delete" data-backdrop="static" tabindex="-1" role="dialog" aria-hidden="false">
+        <div ng-include="'../../deletealert.html'"></div>
+    </div>
+    <div class="modal inmodal" id="table_success" data-backdrop="static" tabindex="-1" role="dialog" aria-hidden="false">
+        <div ng-include="'../../success.html'"></div>
+    </div>
+    <!--添加修改弹出层-->
+    <div class="modal fade" id="preservaModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="myModalLabel"></h4>
+                </div>
+                <div class="modal-body">
+                    <form method="get" class="form-horizontal">
+                        <div class="form-group">
+                            <label class="col-sm-2 col-md-2 control-label text-right"><span class="text-danger">*</span>项目名称：</label>
+                            <div class="col-sm-10 col-md-4">
+                                <input type="text" class="form-control" ng-model="copyprojectArr.project_name">
+                            </div>
+                            <label class="col-sm-2 col-md-2 control-label text-right"><span class="text-danger">*</span>项目类型：</label>
+                            <div class="col-sm-10 col-md-4">
+                                <input type="text" class="form-control" ng-model="copyprojectArr.project_type">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 col-md-2 control-label text-right"><span class="text-danger">*</span>研发CP：</label>
+                            <div class="col-sm-10 col-md-4">
+                                <select class="form-control" ng-model="copyprojectArr.content_provider_id">
+                                    <option value="">-选择研发CP-</option>
+                                    <option ng-repeat="item in Company_s track by $index" value="{{item.id}}" title="{{item.name}}">{{item.name}}</option>
+                                </select>
+                            </div>
+                            <label class="col-sm-2 col-md-2 control-label text-right"><span class="text-danger">*</span>运营负责人：</label>
+                            <div class="col-sm-10 col-md-4">
+                                <div class="input-group">
+                                    <div class="form-control bgEEE text-cursor" title="{{copyprojectArr.operate_incharge}}" ng-click="charges(1)">{{copyprojectArr.operate_incharge}}</div>
+                                    <span class="input-group-addon text-cursor" ng-click="delp_name(1)"><i class="fa fa-close"></i></span>
+                                    <span class="input-group-addon text-cursor" ng-click="charges(1)"><i class="fa fa-search"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 col-md-2 control-label text-right"><span class="text-danger">*</span>商务负责人：</label>
+                            <div class="col-sm-10 col-md-4">
+                                <div class="input-group">
+                                    <div class="form-control bgEEE text-cursor" title="{{copyprojectArr.business_incharge}}" ng-click="charges(2)">{{copyprojectArr.business_incharge}}</div>
+                                    <span class="input-group-addon text-cursor" ng-click="delp_name(2)"><i class="fa fa-close"></i></span>
+                                    <span class="input-group-addon text-cursor" ng-click="charges(2)"><i class="fa fa-search"></i></span>
+                                </div>
+                            </div>
+                            <label class="col-sm-2 col-md-2 control-label text-right"><span class="text-danger">*</span>财务负责人：</label>
+                            <div class="col-sm-10 col-md-4">
+                                <div class="input-group">
+                                    <div class="form-control bgEEE text-cursor" title="{{copyprojectArr.finance_incharge}}" ng-click="charges(3)">{{copyprojectArr.finance_incharge}}</div>
+
+                                    <!--<input type="text" class="form-control text-cursor" ng-model="copyprojectArr.finance_incharge" disabled title="{{copyprojectArr.finance_incharge}}">-->
+                                    <span class="input-group-addon text-cursor" ng-click="delp_name(3)"><i class="fa fa-close"></i></span>
+                                    <span class="input-group-addon text-cursor" ng-click="charges(3)"><i class="fa fa-search"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 col-md-2 control-label text-right"><span class="text-danger">*</span>数据查看人：</label>
+                            <div class="col-sm-10 col-md-4">
+                                <div class="input-group">
+                                    <div class="form-control bgEEE text-cursor" title="{{copyprojectArr.data_view}}" ng-click="charges(4)">{{copyprojectArr.data_view}}</div>
+
+                                    <!--<input type="text" class="form-control text-cursor" ng-model="copyprojectArr.data_view" disabled title="{{copyprojectArr.data_view}}">-->
+                                    <span class="input-group-addon text-cursor" ng-click="delp_name(4)"><i class="fa fa-close"></i></span>
+                                    <span class="input-group-addon text-cursor" ng-click="charges(4)"><i class="fa fa-search"></i></span>
+                                </div>
+                            </div>
+                            <label class="col-sm-2 col-md-2 control-label text-right"><span class="text-danger">*</span>数据录入人：</label>
+                            <div class="col-sm-10 col-md-4">
+                                <div class="input-group">
+                                    <div class="form-control bgEEE text-cursor" title="{{copyprojectArr.data_add}}" ng-click="charges(5)">{{copyprojectArr.data_add}}</div>
+                                    <!--<input type="text" class="form-control text-cursor" ng-model="copyprojectArr.data_add" disabled title="{{copyprojectArr.data_add}}">-->
+                                    <span class="input-group-addon text-cursor" ng-click="delp_name(5)"><i class="fa fa-close"></i></span>
+                                    <span class="input-group-addon text-cursor" ng-click="charges(5)"><i class="fa fa-search"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 col-md-2 control-label text-right"><span class="text-danger">*</span>审核负责人：</label>
+                            <div class="col-sm-10 col-md-4">
+                                <div class="input-group">
+                                    <div class="form-control bgEEE text-cursor" title="{{copyprojectArr.data_examine}}" ng-click="charges(6)">{{copyprojectArr.data_examine}}</div>
+                                    <!--<input type="text" class="form-control text-cursor" ng-model="copyprojectArr.data_examine" disabled title="{{copyprojectArr.data_examine}}">-->
+                                    <span class="input-group-addon text-cursor" ng-click="delp_name(6)"><i class="fa fa-close"></i></span>
+                                    <span class="input-group-addon text-cursor" ng-click="charges(6)"><i class="fa fa-search"></i></span>
+                                </div>
+                            </div>
+                            <label class="col-sm-2 col-md-2 control-label text-right">结算周期：</label>
+                            <div class="col-sm-10 col-md-4">
+                                <select class="form-control" ng-model="copyprojectArr.closing_period">
+                                    <option value="">-请选择-</option>
+                                    <option value="1">n+1</option>
+                                    <option value="2">n+2</option>
+                                    <option value="3">n+3</option>
+                                    <option value="4">n+4</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 col-md-2 control-label text-right">出对账单日：</label>
+                            <div class="col-sm-10 col-md-4">
+                                <input type="text" class="form-control" ng-model="copyprojectArr.bill_date">
+                                <span class="Proportion">日</span>
+                            </div>
+                            <label class="col-sm-2 col-md-2 control-label text-right">收发票日：</label>
+                            <div class="col-sm-10 col-md-4">
+                                <input type="text" class="form-control" ng-model="copyprojectArr.invoice_date">
+                                <span class="Proportion">日</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 col-md-2 control-label text-right">微信运营通知：</label>
+                            <div class="col-sm-10 col-md-4">
+                                <div class="input-group">
+                                    <div class="form-control bgEEE text-cursor" title="{{copyprojectArr.announce_users}}" ng-click="charges(7)">{{copyprojectArr.announce_users}}</div>
+                                    <!--<input type="text" class="form-control" ng-model="copyprojectArr.announce_users" disabled title="{{copyprojectArr.announce_users}}">-->
+                                        <span class="input-group-addon text-cursor" ng-click="delp_name(7)">
+                                            <i class="fa fa-close"></i>
+                                        </span>
+                                        <span class="input-group-addon text-cursor" ng-click="charges(7)">
+                                            <i class="fa fa-search"></i>
+                                        </span>
+                                </div>
+                            </div>
+                            <!--<label class="col-sm-2 col-md-2 control-label text-right">微信商务通知：</label>-->
+                            <!--<div class="col-sm-10 col-md-4">-->
+                                <!--<div class="input-group">-->
+                                    <!--<input type="text" class="form-control" ng-model="copyprojectArr.business_announce_users" disabled title="{{copyprojectArr.business_announce_users}}">-->
+                                        <!--<span class="input-group-addon" ng-click="delp_name(8)">-->
+                                            <!--<i class="fa fa-close"></i>-->
+                                        <!--</span>-->
+                                        <!--<span class="input-group-addon" ng-click="charges(8)">-->
+                                            <!--<i class="fa fa-search"></i>-->
+                                        <!--</span>-->
+                                <!--</div>-->
+                            <!--</div>-->
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <span class="text-danger" ng-bind="usersError"></span>&nbsp;&nbsp;
+                    <button type="button" class="btn btn-success" ng-click="preservaConfirm()">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="popover fade top in editable-container editable-popup" role="tooltip" id="popoverstate">
+        <div class="arrow" style="left: 21.5686%;"></div>
+        <h3 class="popover-title">状态</h3>
+        <div class="popover-content"><div>
+            <div class="editableform-loading" style="display: none;"></div>
+            <form class="form-inline editableform" style="">
+                <div class="control-group form-group">
+                    <div>
+                        <div class="editable-input">
+                            <div class="editable-checklist">
+                                <div>
+                                    <label><input id="pop_che" type="checkbox" value="1"><span> 状态</span></label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="editable-buttons">
+                            <button type="submit" class="btn btn-primary btn-sm editable-submit" ng-click="stateedit()">
+                                <i class="glyphicon glyphicon-ok"></i>
+                            </button>
+                            <button type="button" class="btn btn-default btn-sm editable-cancel" ng-click="statedelete()">
+                                <i class="glyphicon glyphicon-remove"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="editable-error-block help-block" style="display: none;">
+                    </div>
+                </div>
+            </form>
+        </div>
+        </div>
+    </div>
+    <!--上级主管选中弹出窗-->
+    <div class="modal fade" id="charge" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div ng-include="'../../charge.html'"></div>
+    </div>
+    <div class="modal fade" id="charge_radioModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div ng-include="'../../charge_radio.html'"></div>
+    </div>
+
+    <div class="modal fade" id="details" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title">项目录入</h4>
+                </div>
+                <div class="modal-body" style="max-height: 600px">
+                    <div class="dropdown">
+                        <a class="dropdown-toggle" id="showmenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                            操作V
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="showmenu">
+                            <li><a href="#" ng-click="printAll()">打印全部...</a></li>
+                            <li><a href="#" ng-click="printContent()">只打印内容...</a></li>
+                            <li><a href="#" ng-click="wordExport()">另存为word...</a></li>
+                            <li><a href="#" ng-click="hideModal()">关闭</a></li>
+                            <li><a href="#" ng-click="editFun(1)">刷新</a></li>
+                        </ul>
+                    </div>
+                    <h1>项目录入</h1>
+                    <table id="detail" border="1" width="90%">
+                        <tbody>
+                        <tr>
+                            <td width="30%">项目名称</td>
+                            <td width="70%">{{copyprojectArr.project_name}}</td>
+                        </tr>
+                        <tr>
+                            <td>项目类型</td>
+                            <td>{{copyprojectArr.project_type}}</td>
+                        </tr>
+                        <tr>
+                            <td>研发CP</td>
+                            <td>{{copyprojectArr.content_provider}}</td>
+                        </tr>
+                        <tr>
+                            <td>运营负责人</td>
+                            <td>{{copyprojectArr.operate_incharge}}</td>
+                        </tr>
+                        <tr>
+                            <td>商务负责人</td>
+                            <td>{{copyprojectArr.business_incharge}}</td>
+                        </tr>
+                        <tr>
+                            <td>财务负责人</td>
+                            <td>{{copyprojectArr.finance_incharge}}</td>
+                        </tr>
+                        <tr>
+                            <td>数据查看人</td>
+                            <td>{{copyprojectArr.data_view}}</td>
+                        </tr>
+                        <tr>
+                            <td>数据录入人</td>
+                            <td>{{copyprojectArr.data_add}}</td>
+                        </tr>
+                        <tr>
+                            <td>审核负责人</td>
+                            <td>{{copyprojectArr.data_examine}}</td>
+                        </tr>
+                        <tr>
+                            <td>操作时间</td>
+                            <td>{{copyprojectArr.update_date}}</td>
+                        </tr>
+                        <tr>
+                            <td>结算周期</td>
+                            <td>n+{{copyprojectArr.closing_period}}</td>
+                        </tr>
+                        <tr>
+                            <td>出对账单日</td>
+                            <td>{{copyprojectArr.bill_date}}</td>
+                        </tr>
+                        <tr>
+                            <td>收发票日</td>
+                            <td>{{copyprojectArr.invoice_date}}</td>
+                        </tr>
+                        <tr>
+                            <td>微信运营通知</td>
+                            <td>{{copyprojectArr.announce_users}}</td>
+                        </tr>
+                        <!--<tr>-->
+                            <!--<td>微信商务通知</td>-->
+                            <!--<td>{{copyprojectArr.business_announce_users}}</td>-->
+                        <!--</tr>-->
+                        </tbody>
+                    </table>
+                    <div class="ibox float-e-margins" id="deal-list">
+                        <div class="ibox-title" style="border: none">
+                            <h5>处理记录({{ copyprojectArr.dealList.length || 0 }})</h5>
+                            <div class="ibox-tools">
+                                <a class="collapse-link">
+                                    <i class="fa fa-chevron-down"></i>
+                                </a>
+                                <a class="close-link">
+                                    <i class="fa fa-times"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="ibox-content" style="display: none">
+                            <div ng-include="'/page/dealalert.html'"></div>
+                        </div>
+                    </div>
+                    <div class="ibox float-e-margins" id="access-list">
+                        <div class="ibox-title" style="border: none">
+                            <h5>查阅记录</h5>
+                            <div class="ibox-tools">
+                                <a class="close-link">
+                                    <i class="fa fa-times"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="ibox-content">
+                            <div class="row">
+                                <div class="col-md-2" ng-repeat="user in copyprojectArr.accessList">
+                                    <div class="thumbnail text-center">
+                                        <div class="caption" style="padding: 9px 0 0 0">
+                                            <small>{{ user.access_username }}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Panel Other -->
+</div>
+<script src="../../../js/jquery.min.js?t=20180208"></script>
+<script src="../../../js/bootstrap.min.js?t=20180208"></script>
+<script src="../../../js/content.min.js?t=20180208"></script>
+<script src="../../../js/plugins/bootstrap-table/bootstrap-table.min.js?t=20180208"></script>
+<script src="../../../js/plugins/bootstrap-table/bootstrap-table-fixed-columns.js?t=20180208"></script>
+<script src="../../../js/plugins/bootstrap-table/bootstrap-table-mobile.min.js?t=20180208"></script>
+<script src="../../../js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js?t=20180208"></script>
+<script src="../../../js/plugins/angular/angular.min.js?t=20180208"></script>
+<script src="../../../js/controller/business/product/pro_project.js?t=20180118"></script>
+<script src="../../../js/plugins/print/print.min.js?t=20180208"></script>
+<script src="../../../js/plugins/fileSaver/fileSaver.min.js?t=20180208"></script>
+<script src="../../../js/plugins/wordExport/wordExport.js?t=20180208"></script>
+<!--日历插件-->
+</body>
+
+</html>

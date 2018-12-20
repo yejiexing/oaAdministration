@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <title></title>
+    <style>
+        body {
+            background: #66A8E5 url(img/loginbg.jpg) top center no-repeat !important;
+        }
+        #verify{
+            width: 200px;
+            height: 100px;
+            line-height: 100px;
+            text-align: center;
+            background-color: #C4E0F4;
+            background: rgba(255,255,255,0.3);
+            position: absolute;
+            top: 30%;
+            left: 50%;
+            margin-left: -100px;
+        }
+    </style>
+</head>
+<body>
+    <div id="verify">审核中。。。</div>
+</body>
+<script src="js/jquery.min.js"></script>
+<script>
+    //获取url中的参数
+    function getUrlParam(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+        var r = window.location.search.substr(1).match(reg);  //匹配目标参数
+        if (r != null) return unescape(r[2]); return null; //返回参数值
+    }
+    var token = getUrlParam('token');
+    var token_url = 'http://120.76.193.5:8080/index.php/';
+//    var token_url = 'http://120.78.187.154:8080/index.php/';//token_url路径
+    $.ajax({
+        type : 'get',
+        url: token_url + 'admin/verify/' + token,
+        dataType: 'JSON',
+        async: false, //请求是否异步，默认为异步
+        success: function(data) {
+            console.log(data);
+            if(data.code == 200){
+                $("#verify").html(data.data);
+                setTimeout(function(){
+                    window.location.href = 'index.html';
+                },1500)
+            }
+        },
+        error: function() {
+            alert('服务器异常，请稍候重试')
+        }
+    })
+</script>
+</html>

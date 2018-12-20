@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html ng-app="activityExpense">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title></title>
+
+    <link href="../../../css/bootstrap.min.css?t=20180208" rel="stylesheet">
+    <link href="../../../css/font-awesome.min.css?t=20180208" rel="stylesheet">
+    <link href="../../../css/plugins/bootstrap-table/bootstrap-table.min.css?t=20180208" rel="stylesheet">
+    <link href="../../../css/animate.min.css?t=20180208" rel="stylesheet">
+    <link href="../../../css/style.min.css?t=20180208" rel="stylesheet">
+
+    <base target="_blank">
+    <style>
+        .bg-color {
+            background: rgb(223, 240, 216) !important;
+        }
+
+        .modal-body {
+            max-height: 300px;
+            min-height: 300px;
+            overflow-x: hidden
+        }
+
+        .form-horizontal .form-group {
+            margin-bottom: 8px;
+        }
+
+        .form-horizontal .control-label,
+        .form-group>div {
+            padding-left: 0;
+            padding-right: 0;
+        }
+
+        .datepicker.dropdown-menu {
+            z-index: 10000 !important;
+        }
+
+        .col-sm-2 {
+            padding-right: 0;
+        }
+
+        .col-sm-2 select {
+            width: -webkit-fill-available !important;
+        }
+
+        .Proportion {
+            position: absolute;
+            top: 9px;
+            right: 4px;
+        }
+
+        .modal-body h1 {
+            text-align: center;
+            margin-top: -5px;
+            font-size: 20px;
+        }
+
+        .modal-body table {
+            margin: 0 auto;
+        }
+
+        .modal-body tr td {
+            padding: 8px;
+        }
+
+        .modal-body tr td:nth-child(1) {
+            text-align: right;
+        }
+
+        #showmenu {
+            background-color: #888888;
+            padding: 5px 10px;
+            cursor: pointer;
+            color: #fff;
+        }
+
+        .caret {
+            position: absolute;
+            top: 16px;
+            right: 7px;
+        }
+        .select_w170{
+            width: 170px !important;
+        }
+
+    </style>
+
+</head>
+
+<body class="gray-bg" ng-controller="activityExpenseCtrl">
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <!-- Panel Other -->
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>活动费用</h5>
+                <div class="ibox-tools">
+                    <a class="collapse-link">
+                        <i class="fa fa-chevron-up"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="ibox-content">
+                <div class="base-margin" id="query">
+                    <form class="form-inline" role="form" method="post" id="queryForm" style="padding: 0 15px">
+                        <div class="row">
+                            <div class="row-block">
+                                <button class="btn btn-white pull-left" type="button" ng-click="NewlyAdded()" ng-show="save">
+                                    <i class="fa fa-plus"></i> 新增</button>
+                                <div class="input-group select_date" ng-show="index">
+                                    <input type="text" class="form-control demo-input" ng-model="Newdate1" id="date1" disabled>
+                                    <span class="input-group-addon dateclick">
+                                        <i class="fa fa-calendar dateicon" id="date_1"></i>
+                                    </span>
+                                </div>
+                                <div class="input-group select_date" ng-show="index">
+                                    <input type="text" class="form-control demo-input" ng-model="Newdate2" id="date2" disabled>
+                                    <span class="input-group-addon dateclick">
+                                        <i class="fa fa-calendar dateicon" id="date_2"></i>
+                                    </span>
+                                </div>
+                                <div class="select_input" ng-if="index">
+                                    <select class="form-control" ng-model="select.selectProject" style="width: 100%">
+                                        <option value="">-选择项目-</option>
+                                        <option ng-repeat="item in ProjectList track by $index" value="{{item}}" title="{{item}}">{{item}}</option>
+                                    </select>
+                                </div>
+                                <div class="select_input" ng-if="index">
+                                    <select class="form-control" ng-model="select.selectCompany" style="width: 100%">
+                                        <option value="">-选择产品-</option>
+                                        <option ng-repeat="item in CompanyList track by $index" value="{{item}}" title="{{item}}">{{item}}</option>
+                                    </select>
+                                </div>
+                                <div class="select_input" ng-if="index">
+                                    <select class="form-control" ng-model="select.selectChannel" style="width: 100%">
+                                        <option value="">-选择渠道-</option>
+                                        <option ng-repeat="item in ChannelList track by $index" value="{{item}}" title="{{item}}">{{item}}</option>
+                                    </select>
+                                </div>
+                                <div class="input-group select_input select_w170" ng-if="index">
+                                    <input type="text" class="form-control" ng-model="select.comprehensive" placeholder="活动名称 奖品类型 奖品名">
+                                </div>
+                                <button class="btn btn-success pull-left ml10" type="button" ng-click="search()" ng-if="index">
+                                    <i class="fa fa-search"></i> 搜索</button> &nbsp;
+                            </div>
+                            <div class="pull-right" style="margin-right: 16px">
+                                <button class="btn btn-white" type="button" ng-click="doQuery()">
+                                    <i class="fa fa-refresh"></i> 刷新</button>
+                                <button class="btn btn-white" type="button" ng-disabled="!editState" ng-click="editFun()" ng-if="update">
+                                    <i class="fa fa-edit"></i> 编辑</button>
+                                <!--<button class="btn btn-white" type="button" ng-disabled="!updateInfo" ng-click="updateFun()" ng-if="updateinvoiceinfo"><i class="fa fa-edit"></i> 修改发票信息</button>-->
+                                <button class="btn btn-danger" type="button" ng-disabled="!deleteState" ng-click="deleteFun()" ng-if="delete">
+                                    <i class="fa fa-trash"></i> 删除</button>
+                                <button class="btn btn-white" type="button" ng-disabled="!editState" ng-click="editFun(1)" ng-if="read">
+                                    <i class="fa fa-newspaper-o"></i> 详情</button>
+                                <button class="btn btn-white" type="button" ng-click="export()" ng-if="isexport"><i class="fa fa-download"></i> 下载</button>
+                                <button class="btn btn-white" type="button" ng-click="iconFun()" ng-if="imports"><i class="fa fa-upload"></i> 上传</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="container" style="width: 100%" ng-class="{true: 'rablehide', false: 'rablehide1'}[ispc]">
+                    <table id="demo-table">
+                        <thead>
+                            <tr ng-click="tab()">
+                                <th data-checkbox="true"></th>
+                                <th data-field="date">日期</th>
+                                <th data-field="product" data-formatter="smaller">产品</th>
+                                <th data-field="project" data-formatter="smaller">项目</th>
+                                <th data-field="product" data-formatter="smaller">产品</th>
+                                <th data-field="channel">渠道</th>
+                                <th data-field="activity_name">活动名称</th>
+                                <th data-field="gift_type">奖品类型</th>
+                                <th data-field="gift_name">奖品名</th>
+                                <th data-field="gift_unit_price">奖品单价</th>
+                                <th data-field="gift_num">奖品数量</th>
+                                <th data-field="total_money">费用</th>
+                                <th data-field="remark">备注</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="modal inmodal" id="table_delete" data-backdrop="static" tabindex="-1" role="dialog" aria-hidden="false">
+            <div ng-include="'../../deletealert.html'"></div>
+        </div>
+        <div class="modal inmodal" id="table_success" data-backdrop="static" tabindex="-1" role="dialog" aria-hidden="false">
+            <div ng-include="'../../success.html'"></div>
+        </div>
+        <div class="modal fade" id="updateInvoiceInfo" tabindex="-1" role="dialog" aria-labelledby="auditLabel">
+            <div ng-include="'../financealert/updateInvoiceInfo.html'"></div>
+        </div>
+        <!--导入弹出层-->
+        <div class="modal fade" id="icon" tabindex="-1" role="dialog" aria-labelledby="iconLabel">
+            <div class="modal-dialog modal-sm" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title">选择Excel文件</h4>
+                    </div>
+                    <div class="modal-body" style="min-height:initial">
+                        <div class="form-group">
+                            <input id="iconFile" type="file" onchange="angular.element(this).scope().checkFile(this.files[0])">
+                        </div>
+                        <div class="sk-spinner sk-spinner-wave" ng-show="uploading">
+                            <div class="sk-rect1"></div>
+                            <div class="sk-rect2"></div>
+                            <div class="sk-rect3"></div>
+                            <div class="sk-rect4"></div>
+                            <div class="sk-rect5"></div>
+                        </div>
+                        <button type="button" class="btn btn-xs btn-success" ng-click="dome()">下载模板</button>
+                    </div>
+                    <div class="modal-footer">
+                        <span class="text-danger" ng-bind="usersError"></span>&nbsp;&nbsp;
+                        <button type="button" class="btn btn-success" ng-disabled="usersError !== '' || uploading" ng-click="import()">导入</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--添加修改弹出层-->
+        <div class="modal fade" id="preservaModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">
+                            <span aria-hidden="true">&times;</span>
+                            <span class="sr-only">Close</span>
+                        </button>
+                        <h4 class="modal-title" id="myModalLabel"></h4>
+                    </div>
+                    <div class="modal-body">
+                        <form method="get" class="form-horizontal">
+                            <div class="form-group">
+                                <label class="col-sm-2 col-md-2 control-label text-right">
+                                    <span class="text-danger">*</span>日期：</label>
+                                <div class="col-sm-10 col-md-4">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control demo-input" ng-model="copyserverArr.month" id="date3" disabled>
+                                        <span class="input-group-addon dateclick">
+                                            <i class="fa fa-calendar dateicon" id="date_3"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                                <label class="col-sm-2 col-md-2 control-label text-right">
+                                    <span class="text-danger">*</span>项目：</label>
+                                <div class="col-sm-10 col-md-4">
+                                    <select class="form-control" ng-model="copyserverArr.project_id" ng-change="projectFun(1)">
+                                        <option value="">-选择项目-</option>
+                                        <option ng-repeat="item in Channel_s1 track by $index" value="{{item.id}}" title="{{item.name}}">{{item.name}}</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 col-md-2 control-label text-right">
+                                    <span class="text-danger">*</span>产品：</label>
+                                <div class="col-sm-10 col-md-4">
+                                    <select class="form-control" ng-model="copyserverArr.product_id" >
+                                        <option value="">-选择产品-</option>
+                                        <option ng-repeat="item in Region_s1 track by $index" value="{{item.id}}" title="{{item.name}}">{{item.name}}</option>
+                                    </select>
+                                </div>
+                                <label class="col-sm-2 col-md-2 control-label text-right">
+                                    <span class="text-danger">*</span>渠道：</label>
+                                <div class="col-sm-10 col-md-4">
+                                    <select class="form-control" ng-model="copyserverArr.channel_id">
+                                        <option value="">-选择渠道-</option>
+                                        <option ng-repeat="item in Company_s1 track by $index" value="{{item.id}}" title="{{item.name}}">{{item.name}}</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 col-sm-2 control-label text-right">
+                                    <span class="text-danger">*</span>活动名称：</label>
+                                <div class="col-sm-10 col-md-4">
+                                    <input type="text" class="form-control" ng-model="copyserverArr.activity_name">
+                                </div>
+                                <label class="col-sm-2 col-sm-2 control-label text-right">
+                                    <span class="text-danger">*</span>奖品类型：</label>
+                                <div class="col-sm-10 col-md-4">
+                                    <input type="text" class="form-control" ng-model="copyserverArr.gift_type">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 col-sm-2 control-label text-right">
+                                    <span class="text-danger">*</span>奖品名：</label>
+                                <div class="col-sm-10 col-md-4">
+                                    <input type="text" class="form-control" ng-model="copyserverArr.gift_name">
+                                </div>
+                                <label class="col-sm-2 col-sm-2 control-label text-right">
+                                    <span class="text-danger">*</span>奖品单价：</label>
+                                <div class="col-sm-10 col-md-4">
+                                    <input type="text" class="form-control" ng-model="copyserverArr.gift_unit_price">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 col-sm-2 control-label text-right">
+                                    <span class="text-danger">*</span>奖品数量：</label>
+                                <div class="col-sm-10 col-md-4">
+                                    <input type="text" class="form-control" ng-model="copyserverArr.gift_num">
+                                </div>
+                                <label class="col-sm-2 col-sm-2 control-label text-right">
+                                    <span class="text-danger">*</span>费用：</label>
+                                <div class="col-sm-10 col-md-4">
+                                    <input type="text" class="form-control" ng-model="copyserverArr.total_money">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 col-sm-2 control-label text-right">
+                                    备注：</label>
+                                <div class="col-sm-10 col-md-4">
+                                    <input type="text" class="form-control" ng-model="copyserverArr.remark">
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <span class="text-danger" ng-bind="usersError"></span>&nbsp;&nbsp;
+                        <button type="button" class="btn btn-success" ng-click="preservaConfirm()">保存</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="popover fade top in editable-container editable-popup" role="tooltip" id="popoverstate">
+            <div class="arrow" style="left: 21.5686%;"></div>
+            <h3 class="popover-title">状态</h3>
+            <div class="popover-content">
+                <div>
+                    <div class="editableform-loading" style="display: none;"></div>
+                    <form class="form-inline editableform" style="">
+                        <div class="control-group form-group">
+                            <div>
+                                <div class="editable-input">
+                                    <div class="editable-checklist">
+                                        <div>
+                                            <label>
+                                                <input id="pop_che" type="checkbox" value="1">
+                                                <span> 状态</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="editable-buttons">
+                                    <button type="submit" class="btn btn-primary btn-sm editable-submit" ng-click="stateedit()">
+                                        <i class="glyphicon glyphicon-ok"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-default btn-sm editable-cancel" ng-click="statedelete()">
+                                        <i class="glyphicon glyphicon-remove"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="editable-error-block help-block" style="display: none;">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="details" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">
+                            <span aria-hidden="true">&times;</span>
+                            <span class="sr-only">Close</span>
+                        </button>
+                        <h4 class="modal-title">活动费用</h4>
+                    </div>
+                    <div class="modal-body" style="max-height: 600px">
+                        <div class="dropdown">
+                            <a class="dropdown-toggle" id="showmenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                操作V
+                                <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="showmenu">
+                                <li>
+                                    <a href="#" ng-click="printAll()">打印全部...</a>
+                                </li>
+                                <li>
+                                    <a href="#" ng-click="printContent()">只打印内容...</a>
+                                </li>
+                                <li>
+                                    <a href="#" ng-click="wordExport()">另存为word...</a>
+                                </li>
+                                <li>
+                                    <a href="#" ng-click="hideModal()">关闭</a>
+                                </li>
+                                <li>
+                                    <a href="#" ng-click="editFun(1)">刷新</a>
+                                </li>
+                            </ul>
+                        </div>
+                        <h1>活动费用详情</h1>
+                        <table id="detail" border="1" width="90%">
+                            <tbody>
+                                <tr>
+                                    <td width="30%">日期</td>
+                                    <td width="70%">{{copyserverArr.date}}</td>
+                                </tr>
+                                <tr>
+                                    <td>项目</td>
+                                    <td>{{copyserverArr.project}}</td>
+                                </tr>
+                                <tr>
+                                    <td>产品</td>
+                                    <td>{{copyserverArr.product}}</td>
+                                </tr>
+                                <tr>
+                                    <td>渠道</td>
+                                    <td>{{copyserverArr.channel}}</td>
+                                </tr>
+                                <tr>
+                                    <td>活动名称</td>
+                                    <td>{{copyserverArr.activity_name}}</td>
+                                </tr>
+                                <tr>
+                                    <td>奖品类型</td>
+                                    <td>{{copyserverArr.gift_type}}</td>
+                                </tr>
+                                <tr>
+                                    <td>奖品名</td>
+                                    <td>{{copyserverArr.gift_name}}</td>
+                                </tr>
+                                <tr>
+                                    <td>奖品单价</td>
+                                    <td>{{copyserverArr.gift_unit_price}}</td>
+                                </tr>
+                                <tr>
+                                    <td>奖品数量</td>
+                                    <td>{{copyserverArr.gift_num}}</td>
+                                </tr>
+                                <tr>
+                                    <td>费用</td>
+                                    <td>{{copyserverArr.total_money}}</td>
+                                </tr>
+                                <tr>
+                                    <td>备注</td>
+                                    <td>{{copyserverArr.remark}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="ibox float-e-margins" id="deal-list" ng-show="copyserverArr.dealList.length != '' || copyserverArr.dealList.length != 0">
+                            <div class="ibox-title" style="border: none">
+                                <h5>处理记录({{ copyserverArr.dealList.length }})</h5>
+                                <div class="ibox-tools">
+                                    <a class="collapse-link">
+                                        <i class="fa fa-chevron-down"></i>
+                                    </a>
+                                    <a class="close-link">
+                                        <i class="fa fa-times"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="ibox-content" style="display: none">
+                                <div ng-include="'/page/dealalert.html'"></div>
+                            </div>
+                        </div>
+                        <div class="ibox float-e-margins" id="access-list">
+                            <div class="ibox-title" style="border: none">
+                                <h5>查阅记录</h5>
+                                <div class="ibox-tools">
+                                    <a class="close-link">
+                                        <i class="fa fa-times"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="ibox-content">
+                                <div class="row">
+                                    <div class="col-md-2" ng-repeat="user in copyserverArr.accessList">
+                                        <div class="thumbnail text-center">
+                                            <div class="caption" style="padding: 9px 0 0 0">
+                                                <small>{{ user.access_username }}</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End Panel Other -->
+    </div>
+    <script src="../../../js/jquery.min.js?t=20180208"></script>
+    <script src="../../../js/bootstrap.min.js?t=20180208"></script>
+    <script src="../../../js/content.min.js?t=20180208"></script>
+    <script src="../../../js/plugins/bootstrap-table/bootstrap-table.min.js?t=20180208"></script>
+    <script src="../../../js/plugins/bootstrap-table/bootstrap-table-fixed-columns.js?t=20180208"></script>
+    <script src="../../../js/plugins/bootstrap-table/bootstrap-table-mobile.min.js?t=20180208"></script>
+    <script src="../../../js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js?t=20180208"></script>
+    <script src="../../../js/plugins/angular/angular.min.js?t=20180208"></script>
+    <script src="../../../js/controller/finance/activityexpense/activity_expense.js?t=20180208"></script>
+    <script src="../../../js/plugins/print/print.min.js?t=20180208"></script>
+    <script src="../../../js/plugins/fileSaver/fileSaver.min.js?t=20180208"></script>
+    <script src="../../../js/plugins/wordExport/wordExport.js?t=20180208"></script>
+    <!--日历插件-->
+    <script src="../../../js/plugins/laydate/laydate.js?t=20180208"></script>
+</body>
+
+</html>

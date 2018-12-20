@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html ng-app="getConfig">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title></title>
+
+    <link href="/css/bootstrap.min.css?t=20180208" rel="stylesheet">
+    <link href="/css/font-awesome.min.css?t=20180208" rel="stylesheet">
+    <link href="/css/plugins/bootstrap-table/bootstrap-table.min.css?t=20180208" rel="stylesheet">
+    <link href="/css/animate.min.css?t=20180208" rel="stylesheet">
+    <link href="/css/style.min.css?t=20180208" rel="stylesheet">
+
+    <base target="_blank">
+    <style>
+        .bg-color{
+            background: rgb(223, 240, 216) !important;
+        }
+        .modal-body{
+            max-height: 300px;
+            min-height: 300px;
+            overflow-x: hidden
+        }
+        .form-horizontal .form-group{
+            margin-bottom: 8px;
+        }
+        .form-horizontal .control-label,.form-group>div{
+            padding-left: 0;
+            padding-right: 0;
+        }
+        .datepicker.dropdown-menu{
+            z-index: 10000 !important;
+        }
+        body{
+            padding-right: 0 !important;
+        }
+        .ibox-content{
+            max-height: 700px;
+            overflow-x: hidden;
+        }
+    </style>
+
+</head>
+
+<body class="gray-bg" ng-controller="getConfigCtrl">
+<div class="wrapper wrapper-content animated fadeInRight" >
+    <!-- Panel Other -->
+    <div class="row" style="margin-bottom: 30px">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>用户配置</h5>
+                    <div class="ibox-tools">
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <table class="table table-hover">
+                        <tbody>
+                        <tr ng-repeat="item in config track by $index">
+                            <td class="project-status" width="7%">
+                                <span class="label label-primary" ng-bind="item.title"></span>
+                            </td>
+                            <!--<td class="project-status" width="15%">-->
+                                <!--自定义&nbsp;<input type="checkbox" ng-click="checkbox(item,1)" ng-model="item.is_all"/>-->
+                            <!--</td>-->
+                            <td class="project-title" width="80%">
+                                <a>通知人</a>
+                                <br>
+                                <small ng-bind="item.u_names"></small>
+                            </td>
+                            <td class="project-actions">
+                                <a class="btn btn-white btn-sm" ng-click="update(item,1)" ng-disabled="!setconfig"><i class="fa fa-pencil"></i> 编辑 </a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal inmodal" id="table_success" data-backdrop="static" tabindex="-1" role="dialog" aria-hidden="false">
+        <div ng-include="'/page/success.html'"></div>
+    </div>
+    <div class="modal fade" id="charge" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div ng-include="'/page/charge.html'"></div>
+    </div>
+</div>
+
+<script src="/js/jquery.min.js?t=20180208"></script>
+<script src="/js/bootstrap.min.js?t=20180208"></script>
+<script src="/js/content.min.js?t=20180208"></script>
+<script src="/js/plugins/angular/angular.min.js?t=20180208"></script>
+<script src="/js/controller/sysyem/sys_getconfig.js?t=20171120"></script>
+</body>
+
+</html>

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html ng-app="build">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title></title>
+
+    <link href="/css/bootstrap.min.css?t=20180208" rel="stylesheet">
+    <link href="/css/font-awesome.min.css?t=20180208" rel="stylesheet">
+    <link href="/css/plugins/bootstrap-table/bootstrap-table.min.css?t=20180208" rel="stylesheet">
+    <link href="/css/animate.min.css?t=20180208" rel="stylesheet">
+    <link href="/css/style.min.css?t=20180208" rel="stylesheet">
+
+    <base target="_blank">
+    <style>
+        .bg-color {
+            background: rgb(223, 240, 216) !important;
+        }
+
+        .modal-body {
+            max-height: 300px;
+            min-height: 300px;
+            overflow-x: hidden
+        }
+
+        .form-horizontal .form-group {
+            margin-bottom: 8px;
+        }
+
+        .form-horizontal .control-label,
+        .form-group>div {
+            padding-left: 0;
+            padding-right: 0;
+        }
+
+        .datepicker.dropdown-menu {
+            z-index: 10000 !important;
+        }
+
+        .col-sm-2 {
+            padding-right: 0;
+        }
+
+        .col-sm-2 select {
+            width: -webkit-fill-available !important;
+        }
+
+        .Proportion {
+            position: absolute;
+            top: 9px;
+            right: 4px;
+        }
+
+        .modal-body h1 {
+            text-align: center;
+            margin-top: -5px;
+            font-size: 20px;
+        }
+
+        .modal-body table {
+            margin: 0 auto;
+        }
+
+        .modal-body tr td {
+            padding: 8px;
+        }
+
+        .modal-body tr td:nth-child(1) {
+            text-align: right;
+        }
+
+        #showmenu {
+            background-color: #888888;
+            padding: 5px 10px;
+            cursor: pointer;
+            color: #fff;
+        }
+
+        .caret {
+            position: absolute;
+            top: 16px;
+            right: 7px;
+        }
+
+    </style>
+</head>
+
+<body class="gray-bg" ng-controller="buildCtrl">
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <!-- Panel Other -->
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>分包</h5>
+                <div class="ibox-tools">
+                </div>
+            </div>
+            <div class="ibox-content">
+                <div class="ibox-Masks">
+                    <img class="img-open" src="../../../img/t-03.png" alt="关闭" ng-click="openImg()" />
+                    <img class="path-img" ng-src="{{iconInv}}" width="50%" />
+                </div>
+                <div class="base-margin" id="query">
+                    <form class="form-inline" role="form" method="post" id="queryForm" style="padding: 0 15px">
+                        <div class="row">
+                            <div class="row-block">
+                                <button class="btn btn-white pull-left" type="button" ng-click="NewlyAdded()">
+                                    <i class="fa fa-plus"></i> 新增</button>
+                            </div>
+                            <div class="pull-right" style="margin-right: 16px">
+                                <button class="btn btn-white" type="button" ng-click="export()">
+                                    <i class="fa fa-download"></i> 下载全部</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="container" style="width: 100%">
+                    <table id="demo-table">
+                        <thead>
+                        <tr ng-click="tab()">
+                            <th data-formatter="numData">序号</th>
+                            <th data-field="name">文件名</th>
+                            <th data-field="channel">渠道</th>
+                            <th data-field="number">渠道号</th>
+                            <th data-field="path" data-formatter="pathFun" data-events="pathEvent">下载地址</th>
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+        <div class="modal inmodal" id="table_success" data-backdrop="static" tabindex="-1" role="dialog" aria-hidden="false">
+            <div ng-include="'/page/success.html'"></div>
+        </div>
+        <div class="modal fade" id="preservaModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <h4 class="modal-title" id="myModalLabel"></h4>
+                    </div>
+                    <div class="modal-body">
+                        <form method="get" class="form-horizontal">
+                            <div class="form-group">
+                                <label class="col-sm-2 col-md-2 control-label text-right"><span class="text-danger">*</span>文件名：</label>
+                                <div class="col-sm-10 col-md-4">
+                                    <input type="text" class="form-control" ng-model="copybuildArr.filename">
+                                </div>
+                                <label class="col-sm-2 col-md-2 control-label text-right">上传APK：</label>
+                                <div class="col-sm-10 col-md-4">
+                                    <input type="file" onchange="angular.element(this).scope().checkFile(this.files[0],$(this))"/>
+                                </div>
+                            </div>
+                            <div ng-repeat="item in copybuildArr.channel" onload="index = i;">
+                                <div class="form-group">
+                                    <label class="col-sm-2 col-md-2 control-label text-right"><span class="text-danger">*</span>渠道名：</label>
+                                    <div class="col-sm-10 col-md-4">
+                                        <input type="text" class="form-control" ng-model="item.name">
+                                    </div>
+                                    <label class="col-sm-2 col-md-2 control-label text-right"><span class="text-danger">*</span>渠道号：</label>
+                                    <div class="col-sm-10 col-md-4">
+                                        <input type="text" class="form-control" placeholder="" ng-model="item.number">
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <span class="text-danger" ng-bind="usersError"></span>&nbsp;&nbsp;
+                        <button type="button" class="btn btn-info" ng-click="addProduct()">新增</button>
+                        <button type="button" class="btn btn-success" ng-click="preservaConfirm()">生成</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="../../../js/jquery.min.js?t=20180208"></script>
+    <script src="../../../js/bootstrap.min.js?t=20180208"></script>
+    <script src="../../../js/content.min.js?t=20180208"></script>
+    <script src="../../../js/plugins/bootstrap-table/bootstrap-table.min.js?t=20180208"></script>
+    <script src="../../../js/plugins/bootstrap-table/bootstrap-table-fixed-columns.js?t=20180208"></script>
+    <script src="../../../js/plugins/bootstrap-table/bootstrap-table-mobile.min.js?t=20180208"></script>
+    <script src="../../../js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js?t=20180208"></script>
+    <script src="../../../js/plugins/angular/angular.min.js?t=20180208"></script>
+    <script src="../../../js/controller/business/subcontractor/build.js?t=20180208"></script>
+</body>
+
+</html>

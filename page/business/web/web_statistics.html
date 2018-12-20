@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html ng-app="webStatistics">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title></title>
+
+    <link href="/css/bootstrap.min.css?t=20180402" rel="stylesheet">
+    <link href="/css/font-awesome.min.css?t=20180402" rel="stylesheet">
+    <link href="/css/plugins/bootstrap-table/bootstrap-table.min.css?t=20180402" rel="stylesheet">
+    <link href="/css/animate.min.css?t=20171115s" rel="stylesheet">
+    <link href="/css/style.min.css?t=20180402" rel="stylesheet">
+
+    <base target="_blank">
+    <style>
+        .bg-color{
+            background: rgb(223, 240, 216) !important;
+        }
+        .modal-body{
+            max-height: 300px;
+            min-height: 300px;
+            overflow-x: hidden
+        }
+        .form-horizontal .form-group{
+            margin-bottom: 8px;
+        }
+        .form-horizontal .control-label,.form-group>div{
+            padding-left: 0;
+            padding-right: 0;
+        }
+        .datepicker.dropdown-menu{
+            z-index: 10000 !important;
+        }
+        .col-sm-2{
+            padding-right: 0;
+        }
+        .col-sm-2 select{
+            width:-webkit-fill-available !important;
+        }
+        .Proportion{
+            position: absolute;
+            top: 9px;
+            right: 4px;
+        }
+        .modal-body h1{
+            text-align: center;
+            margin-top: -5px;
+            font-size: 20px;
+        }
+        .modal-body table{
+            margin: 0 auto;
+        }
+        .modal-body tr td{
+            padding: 8px;
+        }
+        .modal-body tr td:nth-child(1){
+            text-align: right;
+        }
+        #showmenu{
+            background-color: #888888;
+            padding: 5px 10px;
+            cursor: pointer;
+            color: #fff;
+        }
+
+        .caret {
+            position: absolute;
+            top: 16px;
+            right: 7px;
+        }
+        .ibox-content{
+            padding-bottom: 0;
+            padding-top: 6px;
+            overflow: hidden;
+        }
+        .panel-group .panel{
+            margin-bottom: 15px;
+        }
+        .ibox-content th,.ibox-content td{
+            text-align: left !important;
+        }
+        .panel-heading .panel-title{
+            overflow: hidden;
+            margin-top: 0;
+        }
+        .panel-title a, .panel-title span{
+            margin-top: 10px;
+        }
+        .select_date,.float-e-margins .btn{
+            margin-bottom: 0;
+        }
+        .web_zhezhao{
+            background-color: rgba(356,356,356,1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+        .webin{
+            background-color: rgba(356,356,356,.1);
+        }
+        #loading {
+            position: absolute;
+            z-index: 9999;
+            width: 100px;
+            height: 26px;
+            line-height: 26px;
+            color: #fff;
+            background-color: rgba(0,0,0,.6);
+            top: 50%;
+            left: 50%;
+            margin-left: -50px;
+            margin-top: -50px;
+            text-align: center;
+        }
+    </style>
+
+</head>
+
+<body class="gray-bg" ng-controller="webStatisticsCtrl">
+<div class="wrapper wrapper-content animated fadeInRight" >
+    <!-- Panel Other -->
+    <div class="ibox float-e-margins">
+        <div class="ibox-title" style="min-height: 55px; padding-top: 18px;">
+            <h5>网站数据</h5>
+            <select class="form-control pull-left select_ul" ng-model="site" ng-change="getSite()" style="margin-top: -10px;margin-left: 10px;width: 250px;">
+                <!--<option value="">-选择网站-</option>-->
+                <option ng-repeat="(key, value) in getSiteList track by $index" value="{{value}}" title="{{key}}">{{key}}</option>
+            </select>
+            <div class="ibox-tools">
+                <a class="collapse-link">
+                    <i class="fa fa-chevron-up"></i>
+                </a>
+            </div>
+        </div>
+        <div class="ibox-content">
+            <div>
+                <div class="panel-group" id="accordion">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h5 class="panel-title">
+                                <a class="pull-left">流量&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+                                <div class="input-group select_date">
+                                    <input type="text" class="form-control demo-input" ng-model="start_date_flow" id="date1" disabled>
+                                    <span class="input-group-addon dateclick">
+                                        <i class="fa fa-calendar dateicon" id="date_1"></i>
+                                    </span>
+                                </div>
+                                <span class="pull-left">&nbsp;&nbsp;-</span>
+                                <div class="input-group select_date">
+                                    <input type="text" class="form-control demo-input" ng-model="end_date_flow" id="date2" disabled>
+                                    <span class="input-group-addon dateclick">
+                                        <i class="fa fa-calendar dateicon" id="date_2"></i>
+                                    </span>
+                                </div>
+                                <button class="btn btn-success pull-left ml10" type="button" ng-click="search('flow')">
+                                    <i class="fa fa-search"></i> 搜索</button>
+                            </h5>
+                        </div>
+                        <div id="collapseOne" class="panel-collapse">
+                            <div class="ibox-content">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>日期</th>
+                                            <th>浏览量(PV)</th>
+                                            <th>访客数(UV)</th>
+                                            <th>IP数</th>
+                                            <th>跳出率</th>
+                                            <th>平均访问时长</th>
+                                            <th>转化率</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="(key, value) in flowData track by $index">
+                                            <td>{{value.date}}</td>
+                                            <td>{{value.pv_count}}</td>
+                                            <td>{{value.visitor_count}}</td>
+                                            <td>{{value.ip_count}}</td>
+                                            <td>{{value.bounce_ratio}}</td>
+                                            <td>{{value.avg_visit_time}}</td>
+                                            <td>{{value.conversion_rate}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a class="pull-left">Top10来源网站</a>
+                                <div class="input-group select_date">
+                                    <input type="text" class="form-control demo-input" ng-model="start_date_source" id="date3" disabled>
+                                    <span class="input-group-addon dateclick">
+                                        <i class="fa fa-calendar dateicon" id="date_3"></i>
+                                    </span>
+                                </div>
+                                <span class="pull-left">&nbsp;&nbsp;-</span>
+                                <div class="input-group select_date">
+                                    <input type="text" class="form-control demo-input" ng-model="end_date_source" id="date4" disabled>
+                                    <span class="input-group-addon dateclick">
+                                        <i class="fa fa-calendar dateicon" id="date_4"></i>
+                                    </span>
+                                </div>
+                                <button class="btn btn-success pull-left ml10" type="button" ng-click="search('source')">
+                                    <i class="fa fa-search"></i> 搜索</button>
+                            </h4>
+                        </div>
+                        <div id="collapseTwo" class="panel-collapse">
+                            <div class="ibox-content">
+                                <table class="table">
+                                    <thead>
+                                    <tr>
+                                        <th>来源网站</th>
+                                        <th>浏览量(PV)</th>
+                                        <th>占比</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr ng-repeat="(key, value) in sourceData track by $index">
+                                        <td>{{value.name}}</td>
+                                        <td>{{value.pv_count}}</td>
+                                        <td>{{value.proportion}}</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a class="pull-left">Top10受访页面</a>
+                                <div class="input-group select_date">
+                                    <input type="text" class="form-control demo-input" ng-model="start_date_visit" id="date5" disabled>
+                                    <span class="input-group-addon dateclick">
+                                        <i class="fa fa-calendar dateicon" id="date_5"></i>
+                                    </span>
+                                </div>
+                                <span class="pull-left">&nbsp;&nbsp;-</span>
+                                <div class="input-group select_date">
+                                    <input type="text" class="form-control demo-input" ng-model="end_date_visit" id="date6" disabled>
+                                    <span class="input-group-addon dateclick">
+                                        <i class="fa fa-calendar dateicon" id="date_6"></i>
+                                    </span>
+                                </div>
+                                <button class="btn btn-success pull-left ml10" type="button" ng-click="search('visit')">
+                                    <i class="fa fa-search"></i> 搜索</button>
+                            </h4>
+                        </div>
+                        <div id="collapseThree" class="panel-collapse">
+                            <div class="ibox-content">
+                                <table class="table">
+                                    <thead>
+                                    <tr>
+                                        <th>受访页面</th>
+                                        <th>标题</th>
+                                        <th>浏览量(PV)</th>
+                                        <th>占比</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr ng-repeat="(key, value) in visitData track by $index">
+                                        <td><a href="{{value.name}}" target="_blank ">{{value.name}}</a></td>
+                                        <td>{{value.title}}</td>
+                                        <td>{{value.pv_count}}</td>
+                                        <td>{{value.proportion}}</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Panel Other -->
+</div>
+<div class="web_zhezhao">
+    <div id="loading"><i class="fa fa-spinner fa-spin"></i><span>&nbsp;&nbsp;正在加载...</span></div>
+</div>
+<script src="/js/jquery.min.js?t=20180402"></script>
+<script src="/js/bootstrap.min.js?t=20180402"></script>
+<script src="/js/content.min.js?t=20180402"></script>
+<script src="/js/plugins/bootstrap-table/bootstrap-table.min.js?t=20180402"></script>
+<script src="/js/plugins/bootstrap-table/bootstrap-table-fixed-columns.js?t=20180402"></script>
+<script src="/js/plugins/bootstrap-table/bootstrap-table-mobile.min.js?t=20180402"></script>
+<script src="/js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js?t=20180402"></script>
+<script src="/js/plugins/angular/angular.min.js?t=20180402"></script>
+<script src="/js/controller/business/web/web_statistics.js?t=20180118"></script>
+<script src="/js/plugins/print/print.min.js?t=20180402"></script>
+<script src="/js/plugins/fileSaver/fileSaver.min.js?t=20180402"></script>
+<script src="/js/plugins/wordExport/wordExport.js?t=20180402"></script>
+<script src="/js/plugins/laydate/laydate.js?t=20180305"></script>
+</body>
+
+</html>

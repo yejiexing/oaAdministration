@@ -1,0 +1,127 @@
+<style>
+    .modal-body table {
+        margin: 0 auto;
+    }
+
+    .modal-body tr td {
+        padding: 8px;
+    }
+
+    .modal-body tr td:nth-child(1) {
+        text-align: right;
+    }
+
+    .modal-body {
+        max-height: 300px;
+        overflow-x: hidden
+    }
+
+    .modal-body h1 {
+        text-align: center;
+        margin-top: -5px;
+        font-size: 20px;
+    }
+
+    #showmenu {
+        background-color: #888888;
+        padding: 5px 10px;
+        cursor: pointer;
+        color: #fff;
+    }
+
+    .modal-body .no-records-found>td {
+        text-align: center !important;
+    }
+
+</style>
+<div class="modal-dialog" style="width: 1200px;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">
+                <span aria-hidden="true">&times;</span>
+                <span class="sr-only">Close</span>
+            </button>
+            <h4 class="modal-title" id="myModalLabels"></h4>
+        </div>
+        <div class="modal-body" style="min-height: 640px;max-height: 640px;">
+            <div class="row">
+                <div class="row-block">
+                    <div class="input-group select_date">
+                        <input type="text" class="form-control demo-input" ng-model="setalertArr.start_date" id="Startdate1" disabled>
+                        <span class="input-group-addon dateclick">
+                            <i class="fa fa-calendar dateicon" id="Start_date1"></i>
+                        </span>
+                    </div>
+                    <div class="input-group select_date">
+                        <input type="text" class="form-control demo-input" ng-model="setalertArr.end_date" id="Enddate1" disabled>
+                        <span class="input-group-addon dateclick">
+                            <i class="fa fa-calendar dateicon" id="End_date1"></i>
+                        </span>
+                    </div>
+                    <div class="select_input">
+                        <select class="form-control" ng-model="setalertArr.project_id" ng-change="ProjFun(1);select_change1()" style="width: 100%">
+                            <option value="">-选择项目-</option>
+                            <option ng-repeat="item in Channel_s1 track by $index" value="{{item.id}}" title="{{item.name}}">{{item.name}}</option>
+                        </select>
+                    </div>
+                    <div class="select_input">
+                        <select class="form-control" ng-model="setalertArr.product_id" ng-change="select_change1()" style="width: 100%">
+                            <option value="">-选择产品-</option>
+                            <option ng-repeat="item in Region_s1 track by $index" value="{{item.id}}" title="{{item.name}}">{{item.name}}</option>
+                        </select>
+                    </div>
+                    <div class="dropdown select_input" id="business-region">
+                        <select class="form-control" ng-model="setalertArr.issue_id" ng-change="select_change1()" style="width: 100%">
+                            <option value="">-选择发行主体-</option>
+                            <option ng-repeat="item in Company_s1 track by $index" value="{{item.id}}" title="{{item.name}}">{{item.name}}</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-success pull-right ml10 mr10" type="button" ng-click="modalSearch1()" ng-disabled="searchState">
+                        <i class="fa fa-search"></i> 搜索</button>
+                </div>
+            </div>
+            <table id="modal-table1">
+                <thead>
+                    <tr>
+                        <!--<th data-checkbox="true"></th>-->
+                        <th data-field="start_date">开始时间</th>
+                        <th data-field="end_date">结束时间</th>
+                        <th data-field="project">项目</th>
+                        <th data-field="product">产品</th>
+                        <th data-field="issue">发行主体</th>
+                        <th data-field="channel_recharge_amount">渠道流水金额</th>
+                        <th data-field="channel_closing_amount">渠道结算金额</th>
+                        <th data-field="divide_amount">CP分成金额</th>
+                        <th data-field="qualification_expense">资质支出</th>
+                        <th data-field="server_expense">服务器支出</th>
+                        <th data-field="gamepay_expense">游戏充值支出</th>
+                        <th data-field="account_expense">账号支出</th>
+                        <th data-field="gross_profit">毛利润</th>
+                        <!--<th data-field="active_arpu">活跃arpu</th>-->
+                        <!--<th data-field="pay_arpu">付费arpu</th>-->
+                        <!--<th data-field="pay_rate">付费率</th>-->
+                        <!--<th data-field="second_day_stay">次日留存率</th>-->
+                        <!--<th data-field="third_day_stay">三日留存率</th>-->
+                        <!--<th data-field="seven_day_stay">七日留存率</th>-->
+                        <!--<th data-field="fifteen_day_stay">十五日存留</th>-->
+                        <!--<th data-field="thirty_day_stay">三十日存留</th>-->
+                        <!--<th data-field="third_party_recharge_count">第三方充值人数</th>-->
+                        <!--<th data-field="mm_amount">MM流水金额</th>-->
+                        <!--<th data-field="migu_amount">咪咕流水金额</th>-->
+                        <!--<th data-field="unicom_amount">小沃流水金额</th>-->
+                        <!--<th data-field="telecom_amount">电信流水金额</th>-->
+                        <!--<th data-field="mm_recharge_count">MM充值人数</th>-->
+                        <!--<th data-field="migu_recharge_count">咪咕充值人数</th>-->
+                        <!--<th data-field="unicom_recharge_count">小沃充值人数</th>-->
+                        <!--<th data-field="telecom_recharge_count">电信充值人数</th>-->
+                    </tr>
+                </thead>
+            </table>
+        </div>
+        <div class="modal-footer">
+            <span class="text-danger" style="line-height: 34px;" ng-bind="usersError"></span>
+            <!--<button class="btn btn-success pull-right ml10" type="button" ng-click="BusinessConfirm()" ng-disabled="table_num == 0">生成商务数据</button>-->
+
+        </div>
+    </div>
+</div>

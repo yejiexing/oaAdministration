@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html ng-app="proIntroduction">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title></title>
+
+    <link href="/css/bootstrap.min.css?t=20180208" rel="stylesheet">
+    <link href="/css/font-awesome.min.css?t=20180208" rel="stylesheet">
+    <link href="/css/plugins/bootstrap-table/bootstrap-table.min.css?t=20180208" rel="stylesheet">
+    <link href="/css/animate.min.css?t=20180208" rel="stylesheet">
+    <link href="/css/style.min.css?t=20180208" rel="stylesheet">
+    <base target="_blank">
+    <style>
+        .bg-color{
+            background: rgb(223, 240, 216) !important;
+        }
+        .modal-body{
+            max-height: 300px;
+            min-height: 300px;
+            overflow-x: hidden
+        }
+        .form-horizontal .form-group{
+            margin-bottom: 8px;
+        }
+        .form-horizontal .control-label,.form-group>div{
+            padding-left: 0;
+            padding-right: 0;
+        }
+        .datepicker.dropdown-menu{
+            z-index: 10000 !important;
+        }
+        .col-sm-2{
+            padding-right: 0;
+        }
+        .col-sm-2 select{
+            width:-webkit-fill-available !important;
+        }
+        .Proportion{
+            position: absolute;
+            top: 9px;
+            right: 4px;
+        }
+        .modal-body h1{
+            text-align: center;
+            margin-top: -5px;
+            font-size: 20px;
+        }
+        .modal-body table{
+            margin: 0 auto;
+        }
+        .modal-body tr td{
+            padding: 8px;
+        }
+        .modal-body tr td:nth-child(1){
+            text-align: right;
+        }
+        #showmenu{
+            background-color: #888888;
+            padding: 5px 10px;
+            cursor: pointer;
+            color: #fff;
+        }
+
+        .caret {
+            position: absolute;
+            top: 16px;
+            right: 7px;
+        }
+        .cursor-pointer{
+            cursor: pointer;
+        }
+    </style>
+
+</head>
+
+<body class="gray-bg" ng-controller="proIntroductionCtrl">
+<div class="wrapper wrapper-content animated fadeInRight" >
+    <!-- Panel Other -->
+    <div class="ibox float-e-margins">
+        <div class="ibox-title">
+            <h5>产品引入</h5>
+            <div class="ibox-tools">
+                <a class="collapse-link">
+                    <i class="fa fa-chevron-up"></i>
+                </a>
+            </div>
+        </div>
+        <div class="ibox-content">
+            <div class="base-margin" id="query">
+                <form class="form-inline" role="form" method="post" id="queryForm" style="padding: 0 15px">
+                    <div class="row">
+                        <div class="row-block">
+                            <button class="btn btn-white pull-left" type="button" ng-click="NewlyAdded()" ng-if="save"><i class="fa fa-plus"></i> 新增</button> &nbsp;
+                            <div class="input-group select_date" ng-show="index">
+                                <input type="text" class="form-control demo-input" ng-model="Newdate1" id="date1" disabled>
+                                    <span class="input-group-addon dateclick">
+                                        <i class="fa fa-calendar dateicon" id="date_1"></i>
+                                    </span>
+                            </div>
+                            <span class="pull-left spanm" ng-if="index">至</span>
+                            <div class="input-group select_date" ng-show="index">
+                                <input type="text" class="form-control demo-input" ng-model="Newdate2" id="date2" disabled>
+                                    <span class="input-group-addon dateclick">
+                                        <i class="fa fa-calendar dateicon" id="date_2"></i>
+                                    </span>
+                            </div>
+                            <div class="input-group select_input" ng-if="index">
+                                <input type="text" class="form-control" ng-model="select.product_name" placeholder="产品名称">
+                            </div>
+                            <button class="btn btn-success pull-left ml10" type="button" ng-click="search()" ng-if="index"><i class="fa fa-search"></i> 搜索</button> &nbsp;
+                        </div>
+                        <div class="pull-right edit-button">
+                            <button class="btn btn-white" type="button" ng-click="doQuery()"><i class="fa fa-refresh"></i> 刷新</button>
+                            <button class="btn btn-white" type="button" ng-disabled="!editState" ng-click="editFun()" ng-if="update"><i class="fa fa-edit"></i> 编辑</button>
+                            <button class="btn btn-danger" type="button" ng-disabled="!deleteState" ng-click="deleteFun()" ng-if="delete"><i class="fa fa-trash-o"></i> 删除</button>
+                            <button class="btn btn-white" type="button" ng-disabled="!editState" ng-click="editFun(1)" ng-if="read"><i class="fa fa-newspaper-o"></i> 详情</button>
+                            <button class="btn btn-white" type="button" ng-disabled="!evalState" ng-click="evaluating(1,'评测')" ng-if="eval">评测</button>
+                            <button class="btn btn-white" type="button" ng-disabled="!evaluatingState" ng-click="evaluating(2,'选择评测人')" ng-if="selectTester">选择评测人</button>
+                            <button class="btn btn-white" type="button" ng-disabled="!finishedTestState" ng-click="evaluating(3,'完成评测')" ng-if="finishedTest">完成评测</button>
+                            <button class="btn btn-white" type="button" ng-disabled="!archiveState" ng-click="evaluating(4,'归档')" ng-if="archive">归档</button>
+                            <button class="btn btn-white" type="button" ng-click="export()" ng-if="isexport"><i class="fa fa-download"></i> 下载</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="container" style="width: 100%">
+                <table id="demo-table">
+                    <thead>
+                    <tr ng-click="tab()">
+                        <!--<th data-formatter="numData"></th>-->
+                        <th data-checkbox="true"></th>
+                        <th data-field="product_name">产品名称</th>
+                        <th data-field="product_type">游戏类型</th>
+                        <th data-field="cp">CP</th>
+                        <th data-field="issue">发行平台</th>
+                        <th data-field="create_date">录入时间</th>
+                        <th data-field="page_url" data-formatter="fileData" data-events="pageFun">包链接</th>
+                        <th data-field="page_password">包链接密码</th>
+                        <th data-field="test_account">游戏测试账号</th>
+                        <th data-field="is_ip">是否有IP</th>
+                        <th data-formatter="dateeData">评测时间</th>
+                        <th data-field="operator_name">运营负责人</th>
+                        <th data-field="tester_name">评测人</th>
+                        <th data-field="file_path" data-formatter="fileData" data-events="fileFun">评测文件</th>
+                        <th data-field="create_username">创建人</th>
+                        <th data-field="status">状态</th>
+                    </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="modal inmodal" id="table_delete" data-backdrop="static" tabindex="-1" role="dialog" aria-hidden="false">
+        <div ng-include="'../../deletealert.html'"></div>
+    </div>
+    <div class="modal inmodal" id="table_success" data-backdrop="static" tabindex="-1" role="dialog" aria-hidden="false">
+        <div ng-include="'../../success.html'"></div>
+    </div>
+    <!--添加修改弹出层-->
+    <div class="modal fade" id="preservaModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="myModalLabel"></h4>
+                </div>
+                <div class="modal-body">
+                    <form method="get" class="form-horizontal">
+                        <div class="form-group">
+                            <label class="col-sm-2 col-md-2 control-label text-right"><span class="text-danger">*</span>产品名称：</label>
+                            <div class="col-sm-10 col-md-4">
+                                <input type="text" class="form-control" ng-model="copyIntroductionArr.product_name">
+                            </div>
+                            <label class="col-sm-2 col-md-2 control-label text-right"><span class="text-danger">*</span>游戏类型：</label>
+                            <div class="col-sm-10 col-md-4">
+                                <input type="text" class="form-control" ng-model="copyIntroductionArr.product_type">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 col-md-2 control-label text-right"><span class="text-danger">*</span>CP：</label>
+                            <div class="col-sm-10 col-md-4">
+                                <select class="form-control" ng-model="copyIntroductionArr.cp_id">
+                                    <option value="">-选择CP-</option>
+                                    <option ng-repeat="item in CP_s track by $index" value="{{item.id}}" title="{{item.name}}">{{item.name}}</option>
+                                </select>
+                            </div>
+                            <label class="col-sm-2 col-md-2 control-label text-right"><span class="text-danger">*</span>发行平台：</label>
+                            <div class="col-sm-10 col-md-4">
+                                <select class="form-control" ng-model="copyIntroductionArr.issue_id">
+                                    <option value="">-选择发行平台-</option>
+                                    <option ng-repeat="item in Issue_s track by $index" value="{{item.id}}" title="{{item.name}}">{{item.name}}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 col-md-2 control-label text-right">包链接：</label>
+                            <div class="col-sm-10 col-md-4">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" ng-model="copyIntroductionArr.page_url" title="{{copyIntroductionArr.page_url}}">
+                                        <span class="input-group-addon cursor-pointer" ng-click="pageClick()">上传APK</span>
+                                    <input id="pageFile" type="file" data-key="page_url" onchange="angular.element(this).scope().checkFile(this.files[0],$(this))" style="display: none">
+                                </div>
+                                <!--<input type="text" class="form-control" ng-model="copyIntroductionArr.page_url">-->
+                            </div>
+                            <label class="col-sm-2 col-md-2 control-label text-right">包链接密码：</label>
+                            <div class="col-sm-10 col-md-4">
+                                <input type="text" class="form-control" ng-model="copyIntroductionArr.page_password">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 col-md-2 control-label text-right">游戏测试账号：</label>
+                            <div class="col-sm-10 col-md-4">
+                                <input type="text" class="form-control" ng-model="copyIntroductionArr.test_account">
+                            </div>
+                            <label class="col-sm-2 col-md-2 control-label text-right">是否有IP：</label>
+                            <div class="col-sm-10 col-md-4">
+                                <select class="form-control" ng-model="copyIntroductionArr.is_ip">
+                                    <option value="0">否</option>
+                                    <option value="1">是</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 col-md-2 control-label text-right">
+                                <span class="text-danger">*</span>评测开始时间：</label>
+                            <div class="col-sm-10 col-md-4">
+                                <div class="input-group">
+                                    <input type="text" class="form-control demo-input" ng-model="copyIntroductionArr.start_time" id="date3" disabled>
+                                        <span class="input-group-addon dateclick">
+                                            <i class="fa fa-calendar dateicon" id="date_3"></i>
+                                        </span>
+                                </div>
+                            </div>
+                            <label class="col-sm-2 col-md-2 control-label text-right">
+                                <span class="text-danger">*</span>评测结束时间：</label>
+                            <div class="col-sm-10 col-md-4">
+                                <div class="input-group">
+                                    <input type="text" class="form-control demo-input" ng-model="copyIntroductionArr.end_time" id="date4" disabled>
+                                        <span class="input-group-addon dateclick">
+                                            <i class="fa fa-calendar dateicon" id="date_4"></i>
+                                        </span>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <span class="text-danger" ng-bind="usersError"></span>&nbsp;&nbsp;
+                    <button type="button" class="btn btn-success" ng-click="preservaConfirm()">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="alertState" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title" id="alertTitle"></h4>
+                </div>
+                <div class="modal-body" style="min-height:initial">
+                    <div class="form-group" ng-if="$evals == 1">
+                        <div class="col-sm-12 col-md-12 control-label"><span class="text-danger">*</span>运营负责人：</div>
+                        <div class="col-sm-12 col-md-12">
+                            <div class="input-group">
+                                <input type="text" class="form-control" ng-model="alertArr.operator_id" disabled title="{{alertArr.operator}}">
+                                <span class="input-group-addon cursor-pointer" ng-click="delp_name('operator','operator_id')">
+                                    <i class="fa fa-close"></i>
+                                </span>
+                                <span class="input-group-addon cursor-pointer" ng-click="charges(2,'operator')">
+                                    <i class="fa fa-search"></i>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group" ng-if="$evals == 2">
+                        <div class="col-sm-12 col-md-12 control-label"><span class="text-danger">*</span>评测人：</div>
+                        <div class="col-sm-12 col-md-12">
+                            <div class="input-group">
+                                <input type="text" class="form-control" ng-model="alertArr.tester_id" disabled title="{{alertArr.tester_id}}">
+                                <span class="input-group-addon cursor-pointer" ng-click="delp_name('tester','tester_id')">
+                                    <i class="fa fa-close"></i>
+                                </span>
+                                <span class="input-group-addon cursor-pointer" ng-click="charges(2,'tester')">
+                                    <i class="fa fa-search"></i>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group" ng-show="$evals == 4">
+                        <div class="col-sm-12 col-md-12 control-label"><span class="text-danger">*</span>状态：</div>
+                        <div class="col-sm-12 col-md-12">
+                            <select class="form-control" ng-model="alertArr.status">
+                                <option value="30" ng-show="IntroductionArr.status != '洽谈'">洽谈</option>
+                                <option value="40">淘汰</option>
+                                <option value="50" ng-show="IntroductionArr.status != '评测完成'">合作</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group" ng-if="$evals == 3">
+                        <input id="iconFile" type="file" data-key="iconFile" onchange="angular.element(this).scope().checkFile(this.files[0],$(this))">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <span class="text-danger" ng-bind="usersError"></span>&nbsp;&nbsp;
+                    <button type="button" class="btn btn-success" ng-click="alertEdit()">保存</button>
+                </div>
+            </div>
+        </div>
+        </div>
+    </div>
+    <!--上级主管选中弹出窗-->
+    <div class="modal fade" id="charge" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div ng-include="'../../charge.html'"></div>
+    </div>
+    <div class="modal fade" id="charge_radioModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div ng-include="'../../charge_radio.html'"></div>
+    </div>
+
+    <div class="modal fade" id="details" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title">产品引入</h4>
+                </div>
+                <div class="modal-body" style="max-height: 600px">
+                    <div class="dropdown">
+                        <a class="dropdown-toggle" id="showmenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                            操作V
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="showmenu">
+                            <li><a href="#" ng-click="printAll()">打印全部...</a></li>
+                            <li><a href="#" ng-click="printContent()">只打印内容...</a></li>
+                            <li><a href="#" ng-click="wordExport()">另存为word...</a></li>
+                            <li><a href="#" ng-click="hideModal()">关闭</a></li>
+                            <li><a href="#" ng-click="editFun(1)">刷新</a></li>
+                        </ul>
+                    </div>
+                    <h1>产品引入</h1>
+                    <table id="detail" border="1" width="90%">
+                        <tbody>
+                        <tr>
+                            <td width="30%">产品名称</td>
+                            <td width="70%">{{copyIntroductionArr.product_name}}</td>
+                        </tr>
+                        <tr>
+                            <td>游戏类型</td>
+                            <td>{{copyIntroductionArr.product_type}}</td>
+                        </tr>
+                        <tr>
+                            <td>CP</td>
+                            <td>{{copyIntroductionArr.cp}}</td>
+                        </tr>
+                        <tr>
+                            <td>发行平台</td>
+                            <td>{{copyIntroductionArr.issue}}</td>
+                        </tr>
+                        <tr>
+                            <td>录入时间</td>
+                            <td>{{copyIntroductionArr.create_date}}</td>
+                        </tr>
+                        <tr>
+                            <td>包链接</td>
+                            <td>{{copyIntroductionArr.page_url}}</td>
+                        </tr>
+                        <tr>
+                            <td>包链接密码</td>
+                            <td>{{copyIntroductionArr.page_password}}</td>
+                        </tr>
+                        <tr>
+                            <td>游戏测试账号</td>
+                            <td>{{copyIntroductionArr.test_account}}</td>
+                        </tr>
+                        <tr>
+                            <td>是否有IP</td>
+                            <td>{{copyIntroductionArr.is}}</td>
+                        </tr>
+                        <tr>
+                            <td>评测时间</td>
+                            <td>{{copyIntroductionArr.start_time}}-{{copyIntroductionArr.end_time}}</td>
+                        </tr>
+                        <tr>
+                            <td>运营负责人</td>
+                            <td>{{copyIntroductionArr.operator_name}}</td>
+                        </tr>
+                        <tr>
+                            <td>评测人</td>
+                            <td>{{copyIntroductionArr.tester_name}}</td>
+                        </tr>
+                        <tr>
+                            <td>评测文件</td>
+                            <td>
+                                <span ng-if="copyIntroductionArr.file_path == null || copyIntroductionArr.file_path == ''">无</span>
+                                <span ng-if="copyIntroductionArr.file_path != '' && copyIntroductionArr.file_path != null " class="text-success cursor-pointer">点击下载</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>状态</td>
+                            <td>{{copyIntroductionArr.status}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <div class="ibox float-e-margins" id="deal-list">
+                        <div class="ibox-title" style="border: none">
+                            <h5>处理记录({{ copyIntroductionArr.dealList.length || 0 }})</h5>
+                            <div class="ibox-tools">
+                                <a class="collapse-link">
+                                    <i class="fa fa-chevron-down"></i>
+                                </a>
+                                <a class="close-link">
+                                    <i class="fa fa-times"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="ibox-content" style="display: none">
+                            <div ng-include="'/page/dealalert.html'"></div>
+                        </div>
+                    </div>
+                    <div class="ibox float-e-margins" id="access-list">
+                        <div class="ibox-title" style="border: none">
+                            <h5>查阅记录</h5>
+                            <div class="ibox-tools">
+                                <a class="close-link">
+                                    <i class="fa fa-times"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="ibox-content">
+                            <div class="row">
+                                <div class="col-md-2" ng-repeat="user in copyIntroductionArr.accessList">
+                                    <div class="thumbnail text-center">
+                                        <div class="caption" style="padding: 9px 0 0 0">
+                                            <small>{{ user.access_username }}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Panel Other -->
+<!--<div id="loading" style="position: fixed;top: 0;left: 0;right: 0;bottom: 0;background-color: #fff">-->
+    <!--<div style="width: 120px;height: 26px;color: #fff;background-color: rgba(0,0,0,.6);line-height: 26px;text-align: center;position: absolute;top: 50%;left: 50%;margin-left: -60px;margin-top: -13px">-->
+        <!--<i class="fa fa-spinner fa-spin"></i>&nbsp;&nbsp;数据加载中...-->
+    <!--</div>-->
+<!--</div>-->
+<script src="../../../js/jquery.min.js?t=20180208"></script>
+<script src="../../../js/bootstrap.min.js?t=20180208"></script>
+<script src="../../../js/content.min.js?t=20180208"></script>
+<script src="../../../js/plugins/bootstrap-table/bootstrap-table.min.js?t=20180208"></script>
+<script src="../../../js/plugins/bootstrap-table/bootstrap-table-fixed-columns.js?t=20180208"></script>
+<script src="../../../js/plugins/bootstrap-table/bootstrap-table-mobile.min.js?t=20180208"></script>
+<script src="../../../js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js?t=20180208"></script>
+<script src="../../../js/plugins/angular/angular.min.js?t=20180208"></script>
+<script src="../../../js/controller/business/product/pro_introduction.js?t=20180712"></script>
+<script src="../../../js/plugins/print/print.min.js?t=20180208"></script>
+<script src="../../../js/plugins/fileSaver/fileSaver.min.js?t=20180208"></script>
+<script src="../../../js/plugins/wordExport/wordExport.js?t=20180208"></script>
+<!--日历插件-->
+<script src="/js/plugins/laydate/laydate.js?t=20180208"></script>
+</body>
+
+</html>

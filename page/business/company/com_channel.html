@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html ng-app="comChannel">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title></title>
+
+    <link href="../../../css/bootstrap.min.css?t=?t=20180208" rel="stylesheet">
+    <link href="../../../css/font-awesome.min.css?t=?t=20180208" rel="stylesheet">
+    <link href="../../../css/plugins/bootstrap-table/bootstrap-table.min.css?t=?t=20180208" rel="stylesheet">
+    <link href="../../../css/animate.min.css?t=?t=20180208" rel="stylesheet">
+    <link href="../../../css/style.min.css?t=?t=20180208" rel="stylesheet">
+
+    <base target="_blank">
+    <style>
+        .bg-color {
+            background: rgb(223, 240, 216) !important;
+        }
+
+        .modal-body {
+            max-height: 300px;
+            min-height: 300px;
+            overflow-x: hidden
+        }
+
+        .form-horizontal .form-group {
+            margin-bottom: 8px;
+        }
+
+        .form-horizontal .control-label,
+        .form-group>div {
+            padding-left: 0;
+            padding-right: 0;
+        }
+
+        .datepicker .dropdown-menu {
+            z-index: 10000 !important;
+        }
+
+        .col-sm-2 {
+            padding-right: 0;
+        }
+
+        .col-sm-2 select {
+            width: -webkit-fill-available !important;
+        }
+
+        .Proportion {
+            position: absolute;
+            top: 9px;
+            right: 4px;
+        }
+
+        .modal-body h1 {
+            text-align: center;
+            margin-top: -5px;
+            font-size: 20px;
+        }
+
+        .modal-body table {
+            margin: 0 auto;
+        }
+
+        .modal-body tr td {
+            padding: 8px;
+        }
+
+        .modal-body tr td:nth-child(1) {
+            text-align: right;
+        }
+
+        #showmenu {
+            background-color: #888888;
+            padding: 5px 10px;
+            cursor: pointer;
+            color: #fff;
+        }
+
+        .caret {
+            position: absolute;
+            top: 16px;
+            right: 7px;
+        }
+
+    </style>
+
+</head>
+
+<body class="gray-bg" ng-controller="comChannelCtrl">
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <!-- Panel Other -->
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>渠道录入</h5>
+                <div class="ibox-tools">
+                    <a class="collapse-link">
+                        <i class="fa fa-chevron-up"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="ibox-content">
+                <div class="base-margin" id="query">
+                    <form class="form-inline" role="form" method="post" id="queryForm" style="padding: 0 15px">
+                        <div class="row">
+                            <div class="row-block">
+                                <button class="btn btn-white pull-left" type="button" ng-click="NewlyAdded()" ng-if="save">
+                                    <i class="fa fa-plus"></i> 新增</button> &nbsp;
+                                <div class="dropdown select_input" ng-show="index" id="dropdown-channel">
+                                    <input type="text" class="form-control input-s" ng-model="select.selectChannel" placeholder="-选择渠道-" style="width:100%" data-id="dropdown-channel">
+                                    <span class="caret1" ng-click="searchFun('dropdown-channel')">
+                                        <i class="fa fa-sort-desc"></i>
+                                    </span>
+                                    <ul class="dropdown-menu select_ul">
+                                        <li ng-repeat="item in ChannelList track by $index" ng-show="select.selectChannel === '' || item.includes(select.selectChannel)  || !select.C_status"
+                                            ng-click="setChannel(item)">
+                                            <a title="{{item}}">{{item}}</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="dropdown select_input" ng-show="index" id="dropdown-company">
+                                    <input type="text" class="form-control input-s" ng-model="select.selectCompany" placeholder="-选择单位-" style="width:100%" data-id="dropdown-company">
+                                    <span class="caret1" ng-click="searchFun('dropdown-company')">
+                                        <i class="fa fa-sort-desc"></i>
+                                    </span>
+                                    <ul class="dropdown-menu select_ul">
+                                        <li ng-repeat="item in CompanyList track by $index" ng-show="select.selectCompany === '' || item.includes(select.selectCompany) || !select.C_status"
+                                            ng-click="setCompany(item)">
+                                            <a title="{{item}}">{{item}}</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <select class="form-control select_input" ng-model="select.selectRegion" ng-show="index">
+                                    <option value="">-选择地区-</option>
+                                    <option value="1">华东区</option>
+                                    <option value="2">华南区</option>
+                                    <option value="3">华中区</option>
+                                    <option value="4">华北区</option>
+                                </select>
+                                <br class="br_show">
+                                <button class="btn btn-success pull-left ml10 edit-button" type="button" ng-click="search()" ng-if="index">
+                                    <i class="fa fa-search"></i> 搜索</button> &nbsp;
+                            </div>
+                            <div class="pull-right edit-button">
+                                <button class="btn btn-white" type="button" ng-click="doQuery()">
+                                    <i class="fa fa-refresh"></i> 刷新</button>
+                                <button class="btn btn-white" type="button" ng-disabled="!editState" ng-click="editFun()" ng-if="update">
+                                    <i class="fa fa-edit"></i> 编辑</button>
+                                <button class="btn btn-danger" type="button" ng-disabled="!deleteState" ng-click="deleteFun()" ng-if="delete">
+                                    <i class="fa fa-trash-o"></i> 删除</button>
+                                <button class="btn btn-white" type="button" ng-disabled="!editState" ng-click="editFun(1)" ng-if="read">
+                                    <i class="fa fa-newspaper-o"></i> 详情</button>
+                                <button class="btn btn-white" type="button" ng-click="export()" ng-if="isexport">
+                                    <i class="fa fa-download"></i> 下载</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="container" style="width: 100%">
+                    <table id="demo-table">
+                        <thead>
+                            <tr ng-click="tab()">
+                                <th data-checkbox="true"></th>
+                                <th data-formatter="numData"></th>
+                                <th data-field="channel_name">名称</th>
+                                <th data-field="channel_type">类型</th>
+                                <th data-field="bill_date">出账单日</th>
+                                <th data-field="invoice_date">收发票日</th>
+                                <th data-field="bill_period">账单周期</th>
+                                <th data-field="invoice_period">收发票周期</th>
+                                <th data-field="pay_work_day">打款工作日</th>
+                                <th data-field="company_name" data-formatter="normal">单位名称</th>
+                                <th data-field="channel_area">渠道地区</th>
+                                <th data-field="company_address" data-formatter="large">公司地址</th>
+                                <th data-field="company_phone" data-formatter="small">公司电话</th>
+                                <th data-field="delivery_phone" data-formatter="small">收件电话</th>
+                                <th data-field="recipients">收件人</th>
+                                <th data-field="delivery_address" data-formatter="large">收件地址</th>
+                                <th data-field="channel_fee">渠道费</th>
+                                <th data-field="invoice_tax_point">开票税点</th>
+                                <th data-field="business_incharge">商务负责人</th>
+                                <th data-field="finance_incharge">财务负责人</th>
+                                <th data-field="data_view">数据查看人</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="modal inmodal" id="table_delete" data-backdrop="static" tabindex="-1" role="dialog" aria-hidden="false">
+            <div ng-include="'../../deletealert.html'"></div>
+        </div>
+        <div class="modal inmodal" id="table_success" data-backdrop="static" tabindex="-1" role="dialog" aria-hidden="false">
+            <div ng-include="'../../success.html'"></div>
+        </div>
+        <!--添加修改弹出层-->
+        <div class="modal fade" id="preservaModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">
+                            <span aria-hidden="true">&times;</span>
+                            <span class="sr-only">Close</span>
+                        </button>
+                        <h4 class="modal-title" id="myModalLabel"></h4>
+                    </div>
+                    <div class="modal-body">
+                        <form method="get" class="form-horizontal">
+                            <div class="form-group">
+                                <label class="col-sm-2 col-md-2 control-label text-right">
+                                    <span class="text-danger">*</span>渠道名称：</label>
+                                <div class="col-sm-10 col-md-4">
+                                    <input type="text" class="form-control" ng-model="copychannelArr.channel_name">
+                                </div>
+                                <label class="col-sm-2 col-md-2 control-label text-right">
+                                    <span class="text-danger">*</span>单位名称：</label>
+                                <div class="col-sm-10 col-md-4">
+                                    <input type="text" class="form-control" ng-model="copychannelArr.company_name">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 col-md-2 control-label text-right">
+                                    <span class="text-danger">*</span>渠道类型：</label>
+                                <div class="col-sm-10 col-md-4">
+                                    <select class="form-control" ng-model="copychannelArr.channel_type">
+                                        <option value="">-请选择-</option>
+                                        <option value="10">渠道</option>
+                                        <option value="20">支付通道</option>
+                                        <option value="30">CPS</option>
+                                    </select>
+                                </div>
+                                <label class="col-sm-2 col-md-2 control-label text-right">
+                                    <span class="text-danger">*</span>渠道地区：</label>
+                                <div class="col-sm-10 col-md-4">
+                                    <select class="form-control" ng-model="copychannelArr.channel_area">
+                                        <option value="">-请选择-</option>
+                                        <option value="1">华东区</option>
+                                        <option value="2">华南区</option>
+                                        <option value="3">华北区</option>
+                                        <option value="4">华中区</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 col-md-2 control-label text-right">
+                                    <span class="text-danger">*</span>公司地址：</label>
+                                <div class="col-sm-10 col-md-4">
+                                    <input type="text" class="form-control" ng-model="copychannelArr.company_address">
+                                </div>
+                                <label class="col-sm-2 col-md-2 control-label text-right">
+                                    <span class="text-danger">*</span>公司电话：</label>
+                                <div class="col-sm-10 col-md-4">
+                                    <input type="text" class="form-control" ng-model="copychannelArr.company_phone">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 col-md-2 control-label text-right">
+                                    <span class="text-danger">*</span>收件地址：</label>
+                                <div class="col-sm-10 col-md-4">
+                                    <input type="text" class="form-control" ng-model="copychannelArr.delivery_address">
+                                </div>
+                                <label class="col-sm-2 col-md-2 control-label text-right">
+                                    <span class="text-danger">*</span>收件人：</label>
+                                <div class="col-sm-10 col-md-4">
+                                    <input type="text" class="form-control" ng-model="copychannelArr.recipients">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 col-md-2 control-label text-right">
+                                    <span class="text-danger">*</span>收件电话：</label>
+                                <div class="col-sm-10 col-md-4">
+                                    <input type="text" class="form-control" placeholder="" ng-model="copychannelArr.delivery_phone">
+                                </div>
+                                <label class="col-sm-2 col-md-2 control-label text-right">
+                                    <span class="text-danger">*</span>渠道费：</label>
+                                <div class="col-sm-10 col-md-4">
+                                    <input type="text" class="form-control" ng-model="copychannelArr.channel_fee">
+                                    <span class="Proportion">%</span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 col-md-2 control-label text-right">
+                                    <span class="text-danger">*</span>开票税点：</label>
+                                <div class="col-sm-10 col-md-4" id="data_1">
+                                    <input type="text" class="form-control" ng-model="copychannelArr.invoice_tax_point">
+                                    <span class="Proportion">%</span>
+                                </div>
+                                <label class="col-sm-2 col-md-2 control-label text-right">
+                                    <span class="text-danger">*</span>开户行名称：</label>
+                                <div class="col-sm-10 col-md-4">
+                                    <input type="text" class="form-control" ng-model="copychannelArr.bank_name">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 col-md-2 control-label text-right">
+                                    <span class="text-danger">*</span>帐号：</label>
+                                <div class="col-sm-10 col-md-4">
+                                    <input type="text" class="form-control" ng-model="copychannelArr.bank_account">
+                                </div>
+                                <label class="col-sm-2 col-md-2 control-label text-right">
+                                    <span class="text-danger">*</span>税务登记证：</label>
+                                <div class="col-sm-10 col-md-4">
+                                    <input type="text" class="form-control" ng-model="copychannelArr.tax_registration">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 col-md-2 control-label text-right">
+                                    <span class="text-danger">*</span>商务负责人：</label>
+                                <div class="col-sm-10 col-md-4">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" ng-model="copychannelArr.business_incharge" disabled>
+                                        <span class="input-group-addon" ng-click="delp_name()">
+                                            <i class="fa fa-close"></i>
+                                        </span>
+                                        <span class="input-group-addon" ng-click="charges()">
+                                            <i class="fa fa-search"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                                <label class="col-sm-2 col-md-2 control-label text-right">
+                                    <span class="text-danger">*</span>财务负责人：</label>
+                                <div class="col-sm-10 col-md-4">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" ng-model="copychannelArr.finance_incharge" disabled>
+                                        <span class="input-group-addon" ng-click="delp_name(1)">
+                                            <i class="fa fa-close"></i>
+                                        </span>
+                                        <span class="input-group-addon" ng-click="charges(1)">
+                                            <i class="fa fa-search"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 col-md-2 control-label text-right">
+                                    <span class="text-danger">*</span>数据查看人：</label>
+                                <div class="col-sm-10 col-md-4">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" ng-model="copychannelArr.data_view" disabled>
+                                        <span class="input-group-addon" ng-click="delp_name(4)">
+                                            <i class="fa fa-close"></i>
+                                        </span>
+                                        <span class="input-group-addon" ng-click="charges(4)">
+                                            <i class="fa fa-search"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                                <label class="col-sm-2 col-md-2 control-label text-right">
+                                    <span class="text-danger">*</span>出账单日：</label>
+                                <div class="col-sm-10 col-md-4">
+                                    <input type="text" class="form-control" ng-model="copychannelArr.bill_date">
+                                    <span class="Proportion">日</span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 col-md-2 control-label text-right">
+                                    <span class="text-danger">*</span>收发票日：</label>
+                                <div class="col-sm-10 col-md-4">
+                                    <input type="text" class="form-control" ng-model="copychannelArr.invoice_date">
+                                    <span class="Proportion">日</span>
+                                </div>
+                                <label class="col-sm-2 col-md-2 control-label text-right">
+                                    <span class="text-danger">*</span>收发票周期：</label>
+                                <div class="col-sm-10 col-md-4">
+                                    <select class="form-control" ng-model="copychannelArr.invoice_period">
+                                        <option value="">-请选择-</option>
+                                        <option value="1">n+1</option>
+                                        <option value="2">n+2</option>
+                                        <option value="3">n+3</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 col-md-2 control-label text-right">
+                                    <span class="text-danger">*</span>账单周期：</label>
+                                <div class="col-sm-10 col-md-4">
+                                    <select class="form-control" ng-model="copychannelArr.bill_period">
+                                        <option value="">-请选择-</option>
+                                        <option value="1">n+1</option>
+                                        <option value="2">n+2</option>
+                                        <option value="3">n+3</option>
+                                    </select>
+                                </div>
+                                <label class="col-sm-2 col-md-2 control-label text-right">
+                                    <span class="text-danger">*</span>打款工作日：</label>
+                                <div class="col-sm-10 col-md-4">
+                                    <input type="text" class="form-control" ng-model="copychannelArr.pay_work_day">
+                                    <span class="Proportion">日</span>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <span class="text-danger" ng-bind="usersError"></span>&nbsp;&nbsp;
+                        <button type="button" class="btn btn-success" ng-click="preservaConfirm()">保存</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="popover fade top in editable-container editable-popup" role="tooltip" id="popoverstate">
+            <div class="arrow" style="left: 21.5686%;"></div>
+            <h3 class="popover-title">状态</h3>
+            <div class="popover-content">
+                <div>
+                    <div class="editableform-loading" style="display: none;"></div>
+                    <form class="form-inline editableform" style="">
+                        <div class="control-group form-group">
+                            <div>
+                                <div class="editable-input">
+                                    <div class="editable-checklist">
+                                        <div>
+                                            <label>
+                                                <input id="pop_che" type="checkbox" value="1">
+                                                <span> 状态</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="editable-buttons">
+                                    <button type="submit" class="btn btn-primary btn-sm editable-submit" ng-click="stateedit()">
+                                        <i class="glyphicon glyphicon-ok"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-default btn-sm editable-cancel" ng-click="statedelete()">
+                                        <i class="glyphicon glyphicon-remove"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="editable-error-block help-block" style="display: none;">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!--上级主管选中弹出窗-->
+        <div class="modal fade" id="charge" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div ng-include="'../../charge.html'"></div>
+        </div>
+        <div class="modal fade" id="charge_radioModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div ng-include="'../../charge_radio.html'"></div>
+        </div>
+
+        <div class="modal fade" id="details" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">
+                            <span aria-hidden="true">&times;</span>
+                            <span class="sr-only">Close</span>
+                        </button>
+                        <h4 class="modal-title">渠道</h4>
+                    </div>
+                    <div class="modal-body" style="max-height: 600px">
+                        <div class="dropdown">
+                            <a class="dropdown-toggle" id="showmenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                操作V
+                                <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="showmenu">
+                                <li>
+                                    <a href="#" ng-click="printAll()">打印全部...</a>
+                                </li>
+                                <li>
+                                    <a href="#" ng-click="printContent()">只打印内容...</a>
+                                </li>
+                                <li>
+                                    <a href="#" ng-click="wordExport()">另存为word...</a>
+                                </li>
+                                <li>
+                                    <a href="#" ng-click="hideModal()">关闭</a>
+                                </li>
+                                <li>
+                                    <a href="#" ng-click="editFun(1)">刷新</a>
+                                </li>
+                            </ul>
+                        </div>
+                        <h1>渠道</h1>
+                        <table id="detail" border="1" width="90%">
+                            <tbody>
+                                <tr>
+                                    <td width="30%">名称</td>
+                                    <td width="70%">{{copychannelArr.channel_name}}</td>
+                                </tr>
+                                <tr>
+                                    <td>渠道类型</td>
+                                    <td>{{channelType(copychannelArr.channel_type)}}</td>
+                                </tr>
+                                <tr>
+                                    <td>收发票日</td>
+                                    <td>{{copychannelArr.invoice_date}}</td>
+                                </tr>
+                                <tr>
+                                    <td>出账单日</td>
+                                    <td>{{copychannelArr.bill_date}}</td>
+                                </tr>
+                                <tr>
+                                    <td>账单周期</td>
+                                    <td>{{copychannelArr.bill_period_name}}</td>
+                                </tr>
+                                <tr>
+                                    <td>收发票周期</td>
+                                    <td>{{copychannelArr.invoice_period_name}}</td>
+                                </tr>
+                                <tr>
+                                    <td>单位名称</td>
+                                    <td>{{copychannelArr.company_name}}</td>
+                                </tr>
+                                <tr>
+                                    <td>渠道地区</td>
+                                    <td>{{copychannelArr.company_area_name}}</td>
+                                </tr>
+                                <tr>
+                                    <td>公司地址</td>
+                                    <td>{{copychannelArr.company_address}}</td>
+                                </tr>
+                                <tr>
+                                    <td>公司电话</td>
+                                    <td>{{copychannelArr.company_phone}}</td>
+                                </tr>
+                                <tr>
+                                    <td>收件电话</td>
+                                    <td>{{copychannelArr.delivery_phone}}</td>
+                                </tr>
+                                <tr>
+                                    <td>收件人</td>
+                                    <td>{{copychannelArr.recipients}}</td>
+                                </tr>
+                                <tr>
+                                    <td>收件地址</td>
+                                    <td>{{copychannelArr.delivery_address}}</td>
+                                </tr>
+                                <tr>
+                                    <td>渠道费</td>
+                                    <td>{{copychannelArr.channel_fee}}</td>
+                                </tr>
+                                <tr>
+                                    <td>开票税点</td>
+                                    <td>{{copychannelArr.channel_fee}}</td>
+                                </tr>
+                                <tr>
+                                    <td>税务登记证</td>
+                                    <td>{{copychannelArr.tax_registration}}</td>
+                                </tr>
+                                <tr>
+                                    <td>开户行名称</td>
+                                    <td>{{copychannelArr.bank_name}}</td>
+                                </tr>
+                                <tr>
+                                    <td>帐号</td>
+                                    <td>{{copychannelArr.bank_account}}</td>
+                                </tr>
+                                <tr>
+                                    <td>商务负责人</td>
+                                    <td>{{copychannelArr.business_incharge}}</td>
+                                </tr>
+                                <tr>
+                                    <td>财务负责人</td>
+                                    <td>{{copychannelArr.finance_incharge}}</td>
+                                </tr>
+                                <tr>
+                                    <td>操作时间</td>
+                                    <td>{{copychannelArr.update_date}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="ibox float-e-margins" id="deal-list">
+                            <div class="ibox-title" style="border: none">
+                                <h5>处理记录({{ copychannelArr.dealList.length || 0 }})</h5>
+                                <div class="ibox-tools">
+                                    <a class="collapse-link">
+                                        <i class="fa fa-chevron-down"></i>
+                                    </a>
+                                    <a class="close-link">
+                                        <i class="fa fa-times"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="ibox-content" style="display: none">
+                                <div ng-include="'/page/dealalert.html'"></div>
+                            </div>
+                        </div>
+                        <div class="ibox float-e-margins" id="access-list">
+                            <div class="ibox-title" style="border: none">
+                                <h5>查阅记录</h5>
+                                <div class="ibox-tools">
+                                    <a class="close-link">
+                                        <i class="fa fa-times"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="ibox-content">
+                                <div class="row">
+                                    <div class="col-md-2" ng-repeat="user in copychannelArr.accessList">
+                                        <div class="thumbnail text-center">
+                                            <div class="caption" style="padding: 9px 0 0 0">
+                                                <small>{{ user.access_username }}</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End Panel Other -->
+    </div>
+    <script src="../../../js/jquery.min.js?t=20180208"></script>
+    <script src="../../../js/bootstrap.min.js?t=20180208"></script>
+    <script src="../../../js/content.min.js?t=20180208"></script>
+    <script src="../../../js/plugins/bootstrap-table/bootstrap-table.min.js?t=20180208"></script>
+    <script src="../../../js/plugins/bootstrap-table/bootstrap-table-fixed-columns.js?t=20180208"></script>
+    <script src="../../../js/plugins/bootstrap-table/bootstrap-table-mobile.min.js?t=20180208"></script>
+    <script src="../../../js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js?t=20180208"></script>
+    <script src="../../../js/plugins/angular/angular.min.js?t=20180208"></script>
+    <script src="../../../js/controller/business/company/com_channel.js?t=20180118"></script>
+    <script src="../../../js/plugins/print/print.min.js?t=20180208"></script>
+    <script src="../../../js/plugins/fileSaver/fileSaver.min.js?t=20180208"></script>
+    <script src="../../../js/plugins/wordExport/wordExport.js?t=20180208"></script>
+</body>
+
+</html>

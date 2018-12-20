@@ -1,0 +1,125 @@
+<style>
+    .modal-body table {
+        margin: 0 auto;
+    }
+
+    .modal-body tr td {
+        padding: 8px;
+    }
+
+    .modal-body tr td:nth-child(1) {
+        text-align: right;
+    }
+
+    .modal-body {
+        max-height: 300px;
+        overflow-x: hidden
+    }
+
+    .modal-body h1 {
+        text-align: center;
+        margin-top: -5px;
+        font-size: 20px;
+    }
+
+    #showmenu {
+        background-color: #888888;
+        padding: 5px 10px;
+        cursor: pointer;
+        color: #fff;
+    }
+
+    .modal-body .no-records-found>td {
+        text-align: center !important;
+    }
+
+</style>
+<div class="modal-dialog" style="width: 1200px;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">
+                <span aria-hidden="true">&times;</span>
+                <span class="sr-only">Close</span>
+            </button>
+            <h4 class="modal-title" id="myModalLabel"></h4>
+        </div>
+        <div class="modal-body" style="min-height: 640px;max-height: 640px;">
+            <div class="row">
+                <div class="row-block">
+                    <div class="select_input" ng-show="report != 1">
+                        <select class="form-control" ng-model="copysettlementArr.cp_id" ng-change="select_change()" style="width: 100%">
+                            <option value="">-结算CP-</option>
+                            <option ng-repeat="item in CP_s track by $index" value="{{item.id}}" title="{{item.name}}">{{item.name}}</option>
+                        </select>
+                    </div>
+                    <div class="input-group select_date">
+                        <input type="text" class="form-control demo-input" ng-model="copysettlementArr.start_date" id="Startdate" disabled>
+                        <span class="input-group-addon dateclick">
+                            <i class="fa fa-calendar dateicon" id="Start_date"></i>
+                        </span>
+                    </div>
+                    <div class="input-group select_date">
+                        <input type="text" class="form-control demo-input" ng-model="copysettlementArr.end_date" id="Enddate" disabled>
+                        <span class="input-group-addon dateclick">
+                            <i class="fa fa-calendar dateicon" id="End_date"></i>
+                        </span>
+                    </div>
+                    <div class="select_input">
+                        <select class="form-control" ng-model="copysettlementArr.project_id" ng-change="projectFun(null);select_change()" style="width: 100%">
+                            <option value="">-选择项目-</option>
+                            <option ng-repeat="item in Channel_s track by $index" value="{{item.id}}" title="{{item.name}}">{{item.name}}</option>
+                        </select>
+                    </div>
+                    <div class="select_input">
+                        <select class="form-control" ng-model="copysettlementArr.product_id" ng-change="select_change()" style="width: 100%">
+                            <option value="">-选择产品-</option>
+                            <option ng-repeat="item in Region_s track by $index" value="{{item.id}}" title="{{item.name}}">{{item.name}}</option>
+                        </select>
+                    </div>
+                    <div class="select_input">
+                        <select class="form-control" ng-model="copysettlementArr.issue_id" ng-change="select_change()" style="width: 100%">
+                            <option value="">-发行主体-</option>
+                            <option ng-repeat="item in Unit_s track by $index" value="{{item.id}}" title="{{item.name}}">{{item.name}}</option>
+                        </select>
+                    </div>
+                    <div class="select_input" ng-show="report != 1">
+                        <select class="form-control" ng-model="select.is_back" ng-change="select_change()" style="width: 100%">
+                            <option value="">-是否回款-</option>
+                            <option value="1">-是-</option>
+                            <option value="0">-否-</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-success pull-right ml10 mr10" type="button" ng-click="modalSearch()">
+                        <i class="fa fa-search"></i> 搜索</button>
+                    <!--<button class="btn btn-white pull-right ml10" type="button" ng-click="preservaConfirm()" ng-show="report != 1">生成CP对账单</button>-->
+                    <!--<span class="pull-right text-danger" style="line-height: 34px;" ng-bind="usersError" ng-show="report != 1"></span>-->
+                </div>
+            </div>
+            <table id="modal-table">
+                <thead>
+                    <tr>
+                        <th data-checkbox="true"></th>
+                        <th data-field="receive_bill_date" ng-if="report1 == 1">发票时间</th>
+                        <th data-field="start_date">开始时间</th>
+                        <th data-field="end_date">结束时间</th>
+                        <th data-field="project_name">项目</th>
+                        <th data-field="product_name">产品</th>
+                        <th data-field="company_name">公司</th>
+                        <th data-field="issue_name">发行主体</th>
+                        <th data-field="income_type">收入类型</th>
+                        <th data-field="closing_unit">结算单位</th>
+                        <th data-field="statement_recharge_amount">对账单流水金额</th>
+                        <th data-field="confirm_amount">确认金额</th>
+                        <th data-field="bill_status">开票状态</th>
+                        <th data-field="receive_amount_status">收款状态</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+        <div class="modal-footer">
+            <span class="text-danger" style="line-height: 34px;" ng-bind="usersError"></span>
+            <button class="btn btn-success pull-right ml10" type="button" ng-click="preservaConfirm()">{{report == 1?'生成财务报表':'生成CP对账单'}}</button>
+
+        </div>
+    </div>
+</div>

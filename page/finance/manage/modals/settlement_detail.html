@@ -1,0 +1,67 @@
+<style>
+    .modal-body table {
+        margin: 0 auto;
+    }
+
+    .modal-body tr td {
+        padding: 8px;
+    }
+
+    .modal-body tr td:nth-child(1) {
+        text-align: right;
+    }
+
+    .modal-body {
+        max-height: 300px;
+        overflow-x: hidden
+    }
+
+    .modal-body h1 {
+        text-align: center;
+        margin-top: -5px;
+        font-size: 20px;
+    }
+
+    #showmenu {
+        background-color: #888888;
+        padding: 5px 10px;
+        cursor: pointer;
+        color: #fff;
+    }
+
+    .modal-body .no-records-found>td {
+        text-align: center !important;
+    }
+
+</style>
+<div class="modal-dialog" style="width: 1200px;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">
+                <span aria-hidden="true">&times;</span>
+                <span class="sr-only">Close</span>
+            </button>
+            <h4 class="modal-title">查看明细</h4>
+        </div>
+        <div class="modal-body" style="min-height: 700px;max-height: 700px;">
+            <table id="detail-table">
+                <thead>
+                    <tr>
+                        <th data-field="start_date">开始时间</th>
+                        <th data-field="end_date">结束时间</th>
+                        <th data-field="project_name">项目</th>
+                        <th data-field="product_name">产品</th>
+                        <th data-field="company_name">公司</th>
+                        <th data-field="issue_name">发行主体</th>
+                        <th data-field="income_type">收入类型</th>
+                        <th data-field="closing_unit">结算单位</th>
+                        <th data-field="statement_recharge_amount">对账单流水金额</th>
+                        <th data-field="confirm_amount">确认金额</th>
+                        <th data-field="bill_status">开票状态</th>
+                        <th data-field="receive_amount_status">收款状态</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>

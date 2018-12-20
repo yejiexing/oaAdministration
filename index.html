@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <title>派乐地互娱OA办公系统</title>
+
+
+    <!--[if lt IE 8]>
+    <meta http-equiv="refresh" content="0;ie.html" />
+    <![endif]-->
+
+    <link rel="shortcut icon" href="img/pldicon.png" />
+    <link href="/css/bootstrap.min.css?t=20180706" rel="stylesheet">
+    <link href="/css/font-awesome.min.css?t=20180706" rel="stylesheet">
+    <link href="/css/animate.min.css?t=20180706" rel="stylesheet">
+    <link href="/css/style.min.css?t=20180706" rel="stylesheet">
+    <link href="/css/content.css?t=20180706" rel="stylesheet">
+</head>
+
+<body class="fixed-sidebar full-height-layout gray-bg fixed-nav" style="overflow:hidden" id="OAlogin">
+    <div id="wrapper" ng-controller="sysMenuCtrl">
+        <!--左侧导航开始-->
+        <nav id="leftNav" class="navbar-default navbar-static-side" role="navigation">
+            <div class="nav-close"><i class="fa fa-times-circle"></i>
+            </div>
+            <div class="sidebar-collapse">
+                <ul class="nav" id="side-menu">
+                </ul>
+            </div>
+        </nav>
+        <!--左侧导航结束-->
+        <!--右侧部分开始-->
+        <div id="page-wrapper" class="gray-bg dashbard-1">
+            <div class="row border-bottom">
+                <nav class="navbar navbar-fixed-top" role="navigation" style="margin-bottom: 0">
+                    <div class="navbar-header" style="display: none;margin-left: 13px;">
+                        <a class="navbar-minimalize">
+                        <i class="fa fa-sort-up" style="color: #fff;font-size: 24px"></i>
+                        </a>
+                    </div>
+                    <!--<div id="scroll">-->
+                    <div class="title">
+                    </div>
+                    <!--</div>-->
+                    <div id="wrapper1">
+                        <div id="scroller">
+                            <ul>
+                            </ul>
+                        </div>
+                    </div>
+                    <ul id="adminnav" class="nav-admin">
+                        <li class="dropdown">
+                            <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+                                <span class="text-muted text-xs block"><span id="user"></span><b class="caret"></b></span>
+                                </a>
+                                <ul class="dropdown-menu animated fadeInRight m-t-xs" style="margin-left: -50px">
+                                    <!--<li><a class="J_menuItem" href="form_avatar.html">修改头像</a>-->
+                                    <!--</li>-->
+                                    <li><a class="J_menuItem" href="password.html">修改密码</a></li>
+                                    <!--<li><a class="J_menuItem" href="contacts.html">联系我们</a>-->
+                                    <!--</li>-->
+                                    <!--<li><a class="J_menuItem" href="mailbox.html">信箱</a>-->
+                                    <!--</li>-->
+                                    <li class="divider"></li>
+                                    <li id="login"><a>安全退出</a>
+                                    </li>
+                                </ul>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+            <div class="row content-tabs">
+                <button class="roll-nav roll-left J_tabLeft"><i class="fa fa-backward"></i>
+                </button>
+                <nav class="page-tabs J_menuTabs">
+                    <div class="page-tabs-content">
+                        <a href="javascript:;" class="J_menuTab active" id="nav1" data-id="index_v1.html?v=20180706">首页</a>
+                    </div>
+                </nav>
+                <button class="roll-nav roll-right J_tabRight"><i class="fa fa-forward"></i>
+                </button>
+                <div class="btn-group roll-nav roll-right">
+                    <button class="dropdown J_tabClose" data-toggle="dropdown">关闭<span class="caret"></span>
+
+                    </button>
+                    <ul role="menu" class="dropdown-menu dropdown-menu-right">
+                        <li class="J_tabShowActive"><a>定位当前选项卡</a></li>
+                        <li class="divider"></li>
+                        <li class="J_tabCloseAll"><a>关闭全部选项卡</a>
+                        </li>
+                        <li class="J_tabCloseOther"><a>关闭其他选项卡</a>
+                        </li>
+                    </ul>
+                </div>
+                <!--<a href="login.html" class="roll-nav roll-right J_tabExit"><i class="fa fa fa-sign-out"></i> 退出</a>-->
+            </div>
+            <div class="row J_mainContent" id="content-main">
+                <iframe id="myFrame" class="J_iframe" name="myFrame" width="100%" height="100%" src="index_v1.html?v=20180706" frameborder="0" data-id="index_v1.html?v=20180706" seamless></iframe>
+            </div>
+        </div>
+        <!--右侧部分结束-->
+    </div>
+    <!--<div id="tishidivshow" style="display: none;" class="box">-->
+        <!--<div class="titles"><ul><li>&nbsp;<i class="icon-bell"></i>&nbsp;系统提醒</li><li style="text-align:right"><a href="javascript:"><img src="img/wclose.png" onclick="return hideTishi()"></a>&nbsp;</li></ul></div>-->
+        <!--<div id="tishicontent" style="height:150px;overflow:auto;padding:10px;text-align:left">-->
+        <!--</div>-->
+    <!--</div>-->
+    <script src="/js/jquery.min.js?t=20180706"></script>
+    <script src="/js/bootstrap.min.js?t=20180706"></script>
+    <script src="/js/plugins/metisMenu/jquery.metisMenu.js?t=20180706"></script>
+    <script src="/js/plugins/slimscroll/jquery.slimscroll.min.js?t=20180706"></script>
+    <script src="/js/plugins/layer/layer.min.js?t=20180706"></script>
+    <script src="/js/hplus.min.js?t=20180706"></script>
+    <script type="text/javascript" src="/js/contabs.min.js?t=20180706"></script>
+    <script src="/js/plugins/pace/pace.min.js?t=20180706"></script>
+    <script src="/js/iscroll.js?t=20180706"></script>
+    <script src="/js/plugins/laydate/laydate.js?t=20180706"></script>
+    <script src="/js/Base64.js?t=20180706"></script>
+    <!--<script s/rc="plugins/fullavatareditor/scripts/jQuery.Cookie.js"></script>-->
+    <script src="/js/config.js?t=20180801"></script>
+    <script src="/js/controller/menu.js?t=20180706"></script>
+    <script src="/js/plugins/laydate/laydate.js?t=20180706"></script>
+    <script>
+        initScreenSaver()
+    </script>
+</body>
+
+</html>

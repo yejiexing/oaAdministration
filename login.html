@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+
+    <title>派乐地互娱OA办公系统 - 登录</title>
+
+    <link rel="shortcut icon" href="img/pldicon.png" />
+    <link href="css/bootstrap.min.css?t=20171105" rel="stylesheet">
+    <link href="css/font-awesome.min.css?t=20171105" rel="stylesheet">
+
+    <link href="css/animate.min.css?t=20171105" rel="stylesheet">
+    <link href="css/style.min.css?t=20171105" rel="stylesheet"><base target="_blank">
+    <!--[if lt IE 8]>
+    <meta http-equiv="refresh" content="0;ie.html" />
+    <![endif]-->
+    <style>
+        body{
+            background:#66A8E5 url('img/loginbg.jpg') top center no-repeat !important;
+            overflow: hidden;
+        }
+        h3{
+            color: #000;
+            font-size: 20px;
+            margin-top: -10px;
+            margin-bottom: 28px;
+        }
+        .middle-box{
+            margin-top: 300px;
+            padding: 30px 60px;
+            max-width: 600px;
+            width: 400px !important;
+            border-radius: 5px;
+            background-color: #C4E0F4;
+            background: rgba(255,255,255,0.3);
+            position: relative;
+        }
+        #Prompts{
+            position: absolute;
+            bottom: -60px;
+            left: 0;
+            width: 400px;
+            text-align: center;
+        }
+        #Prompt{
+            position: absolute;
+            left: 0;
+            width: 400px;
+            text-align: center;
+        }
+        .btn-primary:focus, .btn-primary:hover,.btn-primary{
+            background-color: #1389D3;
+            border-color: #1389D3
+        }
+        .form-control:focus{
+            border: 1px solid #1389D3 !important;
+        }
+        @media (max-width: 768px) {
+            .middle-box{
+                margin-top: 200px;
+                width: 300px !important;
+                padding: 30px 30px;
+            }
+            #Prompts,#Prompt{
+                left: -10px;
+                width: 320px;
+            }
+
+            body{
+                overflow: hidden;
+            }
+        }
+    </style>
+    <script>if(window.top !== window.self){ window.top.location = window.location;}</script>
+</head>
+
+<body class="gray-bg">
+
+    <div class="middle-box text-center loginscreen  animated fadeInDown">
+        <div>
+            <h3>系统登录</h3>
+
+                <div class="form-group">
+                    <input id="username" type="text" class="form-control" placeholder="用户名" required="">
+                </div>
+                <div class="form-group">
+                    <input id="password" type="password" class="form-control" placeholder="密码" required="">
+                </div>
+                <input id="logo" class="btn btn-primary block full-width m-b" type="button" value="登 录">
+
+                <!--<p class="text-muted text-center"> <a href="login.html#"><small>忘记密码了？</small></a> | <a href="register.html">注册一个新账号</a>-->
+                <p class="text-center text-danger" id="Prompt"></p>
+                <!--<p class="text-center" id="Prompts">Copyright ©2017 派乐地互娱OA办公系统 1.0.1</p>-->
+        </div>
+    </div>
+    <script src="js/jquery.min.js?v=2.1.4"></script>
+    <script src="js/bootstrap.min.js?v=3.3.5"></script>
+    <script src="js/config.js"></script>
+    <script>
+        function login(){
+            var username = $("#username").val();
+            var password = $("#password").val();
+            if(username == ''){
+                $("#Prompt").html('请输入账号');
+                return false;
+            }
+            if(password == ''){
+                $("#Prompt").html('请输入密码');
+                return false;
+            }
+            $.ajax({
+                url : url+'admin/base/login',
+                type : 'post',
+                data : {'username':username,'password':password},
+                dataType : 'json',
+                success : function(data){
+                    if(data.code == 200){
+                        userInfo = JSON.stringify(data.data);
+                        menuObj = data.data.menusList;
+                        user = data.data;
+                        document.cookie = "user=" + userInfo;
+                        try {
+                            sessionStorage.setItem('user', userInfo);
+                        } catch (error) {
+                            alert('请关闭无痕模式重试');
+                        }
+                        location.href = 'index.html?oa='+Math.random().toString();
+                    }else if(data.code == 400){
+                        $("#Prompt").html(data.error);
+                    }
+                },
+                error :function(){
+                    console.log('异常')
+                }
+            })
+        }
+        $("#logo").on("click",function(){
+            login();
+        })
+        document.onkeydown = function(e){
+            if(e.keyCode == 13){
+                login();
+            }
+        }
+    </script>
+</body>
+
+</html>

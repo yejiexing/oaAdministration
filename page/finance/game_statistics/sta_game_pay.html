@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html ng-app="statisticsGameDay">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title></title>
+
+    <link href="../../../css/bootstrap.min.css?t=20180208" rel="stylesheet">
+    <link href="../../../css/font-awesome.min.css?t=20180208" rel="stylesheet">
+    <link href="../../../css/plugins/bootstrap-table/bootstrap-table.min.css?t=20180208" rel="stylesheet">
+    <link href="../../../css/animate.min.css?t=20180208" rel="stylesheet">
+    <link href="../../../css/style.min.css?t=20180208" rel="stylesheet">
+
+    <base target="_blank">
+    <style>
+        .bg-color {
+            background: rgb(223, 240, 216) !important;
+        }
+
+        .modal-body {
+            max-height: 300px;
+            min-height: 300px;
+            overflow-x: hidden
+        }
+
+        .form-horizontal .form-group {
+            margin-bottom: 8px;
+        }
+
+        .form-horizontal .control-label,
+        .form-group>div {
+            padding-left: 0;
+            padding-right: 0;
+        }
+
+        .datepicker.dropdown-menu {
+            z-index: 10000 !important;
+        }
+
+        .col-sm-2 {
+            padding-right: 0;
+        }
+
+        .col-sm-2 select {
+            width: -webkit-fill-available !important;
+        }
+
+        .Proportion {
+            position: absolute;
+            top: 9px;
+            right: 4px;
+        }
+
+        .modal-body h1 {
+            text-align: center;
+            margin-top: -5px;
+            font-size: 20px;
+        }
+
+        .modal-body table {
+            margin: 0 auto;
+        }
+
+        .modal-body tr td {
+            padding: 8px;
+        }
+
+        .modal-body tr td:nth-child(1) {
+            text-align: right;
+        }
+
+        #showmenu {
+            background-color: #888888;
+            padding: 5px 10px;
+            cursor: pointer;
+            color: #fff;
+        }
+
+        .caret {
+            position: absolute;
+            top: 16px;
+            right: 7px;
+        }
+
+    </style>
+</head>
+
+<body class="gray-bg" ng-controller="statisticsGameDayCtrl">
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <!-- Panel Other -->
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>推广费统计</h5>
+                <div class="ibox-tools">
+                    <a class="collapse-link">
+                        <i class="fa fa-chevron-up"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="ibox-content">
+                <div class="base-margin" id="query">
+                    <form class="form-inline" role="form" method="post" id="queryForm" style="padding: 0 15px">
+                        <div class="row">
+                            <div class="row-block">
+                                <button class="btn btn-white pull-left" type="button" ng-click="doQuery()">
+                                    <i class="fa fa-refresh"></i> 刷新</button>
+                                <div class="input-group select_date" ng-show="index">
+                                    <input type="text" class="form-control demo-input" ng-model="Newdate1" id="date1" disabled>
+                                    <span class="input-group-addon dateclick">
+                                        <i class="fa fa-calendar dateicon" id="date_1"></i>
+                                    </span>
+                                </div>
+                                <div class="input-group select_date" ng-show="index">
+                                    <input type="text" class="form-control demo-input" ng-model="Newdate2" id="date2" disabled>
+                                    <span class="input-group-addon dateclick">
+                                        <i class="fa fa-calendar dateicon" id="date_2"></i>
+                                    </span>
+                                </div>
+                                <div class="dropdown select_input" ng-show="index" id="dropdown-channel">
+                                    <input type="text" class="form-control input-s" ng-model="select.selectChannel" placeholder="-选择项目-" style="width:100%" data-id="dropdown-channel">
+                                    <span class="caret1" ng-click="searchFun('dropdown-channel')">
+                                        <i class="fa fa-sort-desc"></i>
+                                    </span>
+                                    <ul class="dropdown-menu select_ul">
+                                        <li ng-click="setChannel('所有项目');projectFun()">
+                                            <a>-所有项目-</a>
+                                        </li>
+                                        <li ng-repeat="item in ChannelList track by $index" ng-show="showChannel(item) || !select.C_status" ng-click="setChannel(item);projectFun()">
+                                            <a title="{{item}}">{{item}}</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="dropdown select_input" ng-show="index" id="dropdown-company">
+                                    <input type="text" class="form-control input-s" ng-model="select.selectCompany" placeholder="-选择产品-" style="width:100%" data-id="dropdown-company">
+                                    <span class="caret1" ng-click="searchFun('dropdown-company')">
+                                        <i class="fa fa-sort-desc"></i>
+                                    </span>
+                                    <ul class="dropdown-menu select_ul">
+                                        <li ng-click="setCompany('产品明细')">
+                                            <a>-产品明细-</a>
+                                        </li>
+                                        <li ng-click="setCompany('产品汇总')">
+                                            <a>-产品汇总-</a>
+                                        </li>
+                                        <li ng-repeat="item in CompanyList track by $index" ng-show="showCompany(item) || !select.C_status" ng-click="setCompany(item)">
+                                            <a title="{{item}}">{{item}}</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="dropdown select_input" ng-show="index" id="dropdown-region">
+                                    <input type="text" class="form-control input-s" ng-model="select.selectRegion" placeholder="-选择渠道-" style="width:100%" data-id="dropdown-region">
+                                    <span class="caret1" ng-click="searchFun('dropdown-region')">
+                                        <i class="fa fa-sort-desc"></i>
+                                    </span>
+                                    <ul class="dropdown-menu select_ul">
+                                        <li ng-click="setRegion('渠道明细')">
+                                            <a>-渠道明细-</a>
+                                        </li>
+                                        <li ng-click="setRegion('渠道汇总')">
+                                            <a>-渠道汇总-</a>
+                                        </li>
+                                        <li ng-repeat="item in RegionList track by $index" ng-show="showRegion(item) || !select.C_status" ng-click="setRegion(item)">
+                                            <a title="{{item}}">{{item}}</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <button class="btn btn-success pull-left ml10" type="button" ng-click="search()" ng-if="index">
+                                    <i class="fa fa-search"></i> 搜索</button>
+                            </div>
+                            <div class="pull-right edit-button">
+                                <button class="btn btn-white" type="button" ng-click="export()" ng-if="isexport"><i class="fa fa-download"></i> 下载</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="container" style="width: 100%" ng-class="{true: 'rablehide', false: 'rablehide1'}[ispc]">
+                    <table id="demo-table">
+                        <thead>
+                            <tr ng-click="tab()">
+                                <th data-formatter="numData"></th>
+                                <th data-field="day">日期</th>
+                                <th data-field="product" data-formatter="smaller">产品</th>
+                                <th data-field="project" data-formatter="smaller">项目</th>
+                                <th data-field="product" data-formatter="smaller">产品</th>
+                                <th data-field="channel">渠道</th>
+                                <th data-field="total_money">总金额</th>
+                                <th data-field="cp_pay_amount">cp承担费用</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="popover fade top in editable-container editable-popup" role="tooltip" id="popoverstate">
+            <div class="arrow" style="left: 21.5686%;"></div>
+            <h3 class="popover-title">状态</h3>
+            <div class="popover-content">
+                <div>
+                    <div class="editableform-loading" style="display: none;"></div>
+                    <form class="form-inline editableform" style="">
+                        <div class="control-group form-group">
+                            <div>
+                                <div class="editable-input">
+                                    <div class="editable-checklist">
+                                        <div>
+                                            <label>
+                                                <input id="pop_che" type="checkbox" value="1">
+                                                <span> 状态</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="editable-buttons">
+                                    <button type="submit" class="btn btn-primary btn-sm editable-submit" ng-click="stateedit()">
+                                        <i class="glyphicon glyphicon-ok"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-default btn-sm editable-cancel" ng-click="statedelete()">
+                                        <i class="glyphicon glyphicon-remove"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="editable-error-block help-block" style="display: none;">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../../../js/jquery.min.js?t=20180208"></script>
+    <script src="../../../js/bootstrap.min.js?t=20180208"></script>
+    <script src="../../../js/content.min.js?t=20180208"></script>
+    <script src="../../../js/plugins/bootstrap-table/bootstrap-table.min.js?t=20180208"></script>
+    <script src="../../../js/plugins/bootstrap-table/bootstrap-table-fixed-columns.js?t=20180208"></script>
+    <script src="../../../js/plugins/bootstrap-table/bootstrap-table-mobile.min.js?t=20180208"></script>
+    <script src="../../../js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js?t=20180208"></script>
+    <script src="../../../js/plugins/angular/angular.min.js?t=20180208"></script>
+    <script src="../../../js/controller/finance/game_statistics/sta_game_pay.js?t=20171221"></script>
+    <!--日历插件-->
+    <script src="../../../js/plugins/laydate/laydate.js?t=20180208"></script>
+</body>
+
+</html>

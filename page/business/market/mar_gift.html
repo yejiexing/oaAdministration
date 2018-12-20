@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html ng-app="gift">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title></title>
+
+    <link href="../../../css/bootstrap.min.css?t=20180305" rel="stylesheet">
+    <link href="../../../css/font-awesome.min.css?t=20180305" rel="stylesheet">
+    <link href="../../../css/plugins/bootstrap-table/bootstrap-table.min.css?t=20180305" rel="stylesheet">
+    <link href="../../../css/animate.min.css?t=20180305" rel="stylesheet">
+    <link href="../../../css/style.min.css?t=20180305" rel="stylesheet">
+
+    <base target="_blank">
+    <style>
+        .bg-color {
+            background: rgb(223, 240, 216) !important;
+        }
+
+        .modal-body {
+            max-height: 300px;
+            min-height: 300px;
+            overflow-x: hidden
+        }
+
+        .form-horizontal .form-group {
+            margin-bottom: 8px;
+        }
+
+        .form-horizontal .control-label,
+        .form-group>div {
+            padding-left: 0;
+            padding-right: 0;
+        }
+
+        .datepicker.dropdown-menu {
+            z-index: 10000 !important;
+        }
+
+        .col-sm-2 {
+            padding-right: 0;
+        }
+
+        .col-sm-2 select {
+            width: -webkit-fill-available !important;
+        }
+
+        .Proportion {
+            position: absolute;
+            top: 9px;
+            right: 4px;
+        }
+
+        .modal-body h1 {
+            text-align: center;
+            margin-top: -5px;
+            font-size: 20px;
+        }
+
+        .modal-body table {
+            margin: 0 auto;
+        }
+
+        .modal-body tr td {
+            padding: 8px;
+        }
+
+        .modal-body tr td:nth-child(1) {
+            text-align: right;
+        }
+
+        #showmenu {
+            background-color: #888888;
+            padding: 5px 10px;
+            cursor: pointer;
+            color: #fff;
+        }
+
+        .caret {
+            position: absolute;
+            top: 16px;
+            right: 7px;
+        }
+
+        .file{
+            display: none !important;
+        }
+        .disabled{
+            background-color: #eee;
+            overflow: hidden;
+            text-overflow:ellipsis;
+            white-space: nowrap;
+            width: 123px !important;
+            cursor: pointer;
+        }
+        .zhezhao{
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1000000;
+            background-color: rgba(0,0,0,.3);
+            display: none;
+        }
+        .zhezhao_clear{
+            position: absolute;
+            right: 0;
+            margin: 20px;
+            cursor: pointer;
+        }
+        .zhezhao_img{
+            width: 60%;
+            margin-left: 20%;
+            margin-top: 100px;
+        }
+        .text_demand{
+            resize: none;
+            width: 100%;
+            height: 80px;
+        }
+    </style>
+
+</head>
+
+<body class="gray-bg" ng-controller="giftCtrl">
+<div class="wrapper wrapper-content animated fadeInRight">
+    <!-- Panel Other -->
+    <div class="ibox float-e-margins">
+        <div class="ibox-title">
+            <h5>礼包码</h5>
+            <div class="ibox-tools">
+                <a class="collapse-link">
+                    <i class="fa fa-chevron-up"></i>
+                </a>
+            </div>
+        </div>
+        <div class="ibox-content">
+            <div class="base-margin" id="query">
+                <form class="form-inline" role="form" method="post" id="queryForm" style="padding: 0 15px">
+                    <div class="row">
+                        <div class="row-block">
+                            <button class="btn btn-white pull-left" type="button" ng-click="doQuery()">
+                                <i class="fa fa-refresh"></i> 刷新</button>
+                            <div class="input-group select_input" ng-if="index">
+                                <input type="text" class="form-control" ng-model="select.selectChannel" placeholder="输入礼包码">
+                            </div>
+                            <div class="input-group select_input" ng-if="index">
+                                <select class="form-control" ng-model="select.selectStatus" style="width: 100%">
+                                    <option value="all">-全部-</option>
+                                    <option value="1">-已使用-</option>
+                                    <option value="0">-未使用-</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-success pull-left ml10" type="button" ng-click="search()" ng-show="index">
+                                <i class="fa fa-search"></i> 搜索</button> &nbsp;
+                        </div>
+                        <div class="pull-right" style="margin-right: 16px">
+                            <button class="btn btn-white" type="button" ng-click="iconFun()" ng-if="imports"><i class="fa fa-upload"></i> 上传</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="container" style="width: 100%">
+                <table id="demo-table">
+                    <thead>
+                    <tr ng-click="tab()">
+                        <!--<th data-checkbox="true"></th>-->
+                        <th data-field="id">ID</th>
+                        <th data-field="product">项目名称</th>
+                        <th data-field="code">礼包码</th>
+                    </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="modal inmodal" id="table_success" data-backdrop="static" tabindex="-1" role="dialog" aria-hidden="false">
+        <div ng-include="'../../success.html'"></div>
+    </div>
+    <div class="modal fade" id="icon" tabindex="-1" role="dialog" aria-labelledby="iconLabel">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">选择Excel文件</h4>
+                </div>
+                <div class="modal-body" style="min-height:initial">
+                    <div class="form-group">
+                        <input id="iconFile" type="file" onchange="angular.element(this).scope().checkFile(this.files[0])">
+                    </div>
+                    <div class="sk-spinner sk-spinner-wave" ng-show="uploading">
+                        <div class="sk-rect1"></div>
+                        <div class="sk-rect2"></div>
+                        <div class="sk-rect3"></div>
+                        <div class="sk-rect4"></div>
+                        <div class="sk-rect5"></div>
+                    </div>
+                    <button type="button" class="btn btn-xs btn-success" ng-click="dome()">下载模板</button>
+                </div>
+                <div class="modal-footer">
+                    <span class="text-danger" ng-bind="usersError"></span>&nbsp;&nbsp;
+                    <button type="button" class="btn btn-success" ng-disabled="usersError !== '' || uploading" ng-click="import()">导入</button>
+                </div>
+            </div>
+        </div>
+    </div>
+<div class="zhezhao">
+    <img src="/img/t-03.png" class="zhezhao_clear" alt=""/>
+    <img ng-src="{{getImg}}" class="zhezhao_img" alt=""/>
+</div>
+<script src="../../../js/jquery.min.js?t=20180305"></script>
+<script src="../../../js/bootstrap.min.js?t=20180305"></script>
+<script src="../../../js/plugins/angular/angular.min.js?t=20180305"></script>
+<script src="../../../js/content.min.js?t=20180305"></script>
+<script src="../../../js/plugins/bootstrap-table/bootstrap-table.min.js?t=20180305"></script>
+<script src="../../../js/plugins/bootstrap-table/bootstrap-table-fixed-columns.js?t=20180305"></script>
+<script src="../../../js/plugins/bootstrap-table/bootstrap-table-mobile.min.js?t=20180305"></script>
+<script src="../../../js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js?t=20180305"></script>
+<script src="../../../js/controller/business/market/mar_gift.js?t=20180201"></script>
+<script src="../../../js/plugins/print/print.min.js?t=20180305"></script>
+<script src="../../../js/plugins/fileSaver/fileSaver.min.js?t=20180305"></script>
+<script src="../../../js/plugins/wordExport/wordExport.js?t=20180305"></script>
+<!--日历插件-->
+<script src="../../../js/plugins/laydate/laydate.js?t=20180305"></script>
+</body>
+
+</html>

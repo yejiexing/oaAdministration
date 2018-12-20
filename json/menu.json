@@ -1,0 +1,531 @@
+{
+    "code": 0,
+    "msg": null,
+    "data": [{
+        "id": "1",
+        "name": "个人办公",
+        "image": "glyphicon-envelope",
+        "list": [{
+            "id": "10001",
+            "name": "个人中心",
+            "url": "",
+            "list": [
+                {
+                    "id": "100002",
+                    "name": "提醒信息",
+                    "url": "index_v1.html"
+                },{
+                    "id": "100003",
+                    "name": "个人资料",
+                    "url": "index_v2.html"
+                },{
+                    "id": "100004",
+                    "name": "内部通讯录",
+                    "url": "index_v3.html"
+                },{
+                    "id": "100005",
+                    "name": "个人通讯录",
+                    "url": "index_v4.html"
+                },{
+                    "id": "100005",
+                    "name": "我上传过的文件",
+                    "url": "index_v5.html"
+                }
+            ]
+        }, {
+            "id": "10002",
+            "name": "邮件",
+            "url": "/messageHistory"
+        }, {
+            "id": "10003",
+            "name": "通知公告",
+            "url": "/mailTemplate"
+        }, {
+            "id": "10004",
+            "name": "日程",
+            "url": "/mailTemplate"
+        }, {
+            "id": "10005",
+            "name": "会议",
+            "url": "/mailTemplate",
+            "list": [
+                {
+                    "id": "100002",
+                    "name": "提醒信息",
+                    "url": "/messageHistory"
+                },{
+                    "id": "100003",
+                    "name": "个人资料",
+                    "url": "/messageHistory"
+                }
+            ]
+        }]
+    }, {
+        "id": "2",
+        "name": "流程审批",
+        "image": "glyphicon-user",
+        "list": [{
+            "id": "20001",
+            "name": "代办/处理",
+            "pid": "2",
+            "url": "/role"
+        }, {
+            "id": "20002",
+            "name": "流程申请",
+            "pid": "2",
+            "url": "/user"
+        }, {
+            "id": "20002",
+            "name": "我的申请",
+            "pid": "2",
+            "url": "/user"
+        }, {
+            "id": "20002",
+            "name": "我的申请未通过",
+            "pid": "2",
+            "url": "/user"
+        }, {
+            "id": "20002",
+            "name": "我的下属申请",
+            "pid": "2",
+            "url": "/user"
+        }, {
+            "id": "20002",
+            "name": "经我处理",
+            "pid": "2",
+            "url": "/user"
+        }, {
+            "id": "20002",
+            "name": "授权单据查看",
+            "pid": "2",
+            "url": "/user"
+        }]
+    }, {
+        "id": "3",
+        "name": "资源中心",
+        "image": "icon-product",
+        "list": [{
+            "id": "30001",
+            "name": "文档管理",
+            "pid": "3",
+            "url": "/"
+        }, {
+            "id": "30002",
+            "name": "共享的文件",
+            "pid": "3",
+            "url": "/"
+        }]
+    }, {
+        "id": "4",
+        "name": "H5数据",
+        "image": "glyphicon-cog",
+        "list": [{
+            "id": "40002",
+            "name": "卡牌萌兽",
+            "pid": "4",
+            "url": "/country",
+            "list": [
+                {
+                    "id": "400001",
+                    "name": "抽奖",
+                    "pid": "3",
+                    "url": "/"
+                }
+            ]
+        }]
+    }, {
+        "id": "5",
+        "name": "商务运营",
+        "image": "glyphicon-list",
+        "list": [{
+            "id": "50001",
+            "name": "公司管理",
+            "pid": "5",
+            "url": "/supplierCategory",
+            "list": [
+                {
+                    "id": "100002",
+                    "name": "渠道录入",
+                    "url": "index_v1.html"
+                },{
+                    "id": "100003",
+                    "name": "CP公司录入",
+                    "url": "index_v2.html"
+                },{
+                    "id": "100004",
+                    "name": "发行公司录入",
+                    "url": "index_v3.html"
+                },{
+                    "id": "100005",
+                    "name": "支付渠道",
+                    "url": "index_v4.html"
+                },{
+                    "id": "100005",
+                    "name": "渠道通讯录",
+                    "url": "index_v5.html"
+                }
+            ]
+        }, {
+            "id": "50002",
+            "name": "产品管理",
+            "pid": "5",
+            "url": "/procurementCategory",
+            "list": [
+                {
+                    "id": "100002",
+                    "name": "项目录入",
+                    "url": "index_v1.html"
+                },{
+                    "id": "100003",
+                    "name": "产品录入",
+                    "url": "index_v2.html"
+                },{
+                    "id": "100004",
+                    "name": "产品收入类型",
+                    "url": "index_v3.html"
+                }
+            ]
+        }, {
+            "id": "50003",
+            "name": "运营数据录入",
+            "pid": "5",
+            "url": "/productLine",
+            "list": [
+                {
+                    "id": "100002",
+                    "name": "我的运营数据",
+                    "url": "index_v1.html"
+                },{
+                    "id": "100003",
+                    "name": "运营数据",
+                    "url": "index_v2.html"
+                }
+            ]
+        }, {
+            "id": "50004",
+            "name": "商务数据录入",
+            "pid": "5",
+            "url": "/attribute",
+            "list": [
+                {
+                    "id": "100002",
+                    "name": "我的商务数据",
+                    "url": "index_v1.html"
+                },{
+                    "id": "100003",
+                    "name": "商务数据",
+                    "url": "index_v2.html"
+                }
+            ]
+        }, {
+            "id": "50005",
+            "name": "数据审核",
+            "pid": "5",
+            "url": "/attributeSet",
+            "list": [
+                {
+                    "id": "100002",
+                    "name": "运营数据审核",
+                    "url": "index_v1.html"
+                },{
+                    "id": "100003",
+                    "name": "商务数据审核",
+                    "url": "index_v2.html"
+                }
+            ]
+        }, {
+            "id": "40003",
+            "name": "数据汇总",
+            "pid": "4",
+            "url": "/region",
+            "list": [
+                {
+                    "id": "100002",
+                    "name": "我的数据汇总",
+                    "url": "index_v1.html"
+                },{
+                    "id": "100003",
+                    "name": "数据汇总",
+                    "url": "index_v2.html"
+                }
+            ]
+        }, {
+            "id": "40004",
+            "name": "统计分析",
+            "pid": "4",
+            "url": "/site",
+            "list": [
+                {
+                    "id": "100002",
+                    "name": "按天统计",
+                    "url": "index_v1.html"
+                },{
+                    "id": "100003",
+                    "name": "月份统计",
+                    "url": "index_v2.html"
+                }
+            ]
+        }, {
+            "id": "40005",
+            "name": "我的统计分析",
+            "pid": "4",
+            "url": "/gatheringBank",
+            "list": [
+                {
+                    "id": "100002",
+                    "name": "我的按天统计",
+                    "url": "index_v1.html"
+                },{
+                    "id": "100003",
+                    "name": "我的月份统计",
+                    "url": "index_v2.html"
+                }
+            ]
+        }]
+    }, {
+        "id": "6",
+        "name": "财务结算",
+        "image": "icon-product",
+        "list": [{
+            "id": "60001",
+            "name": "财务管理",
+            "pid": "6",
+            "url": "/rate",
+            "list": [
+                {
+                    "id": "100002",
+                    "name": "财务查询",
+                    "url": "index_v1.html"
+                },{
+                    "id": "100003",
+                    "name": "财务分析",
+                    "url": "index_v2.html"
+                },{
+                    "id": "100003",
+                    "name": "1.0添加财务对账单",
+                    "url": "index_v2.html"
+                },{
+                    "id": "100003",
+                    "name": "2.0财务开票",
+                    "url": "index_v2.html"
+                },{
+                    "id": "100003",
+                    "name": "3.0财务收款",
+                    "url": "index_v2.html"
+                },{
+                    "id": "100003",
+                    "name": "4.0给cp开对账单",
+                    "url": "index_v2.html"
+                }
+            ]
+        }, {
+            "id": "60002",
+            "name": "财务费用",
+            "pid": "6",
+            "url": "/rate",
+            "list": [
+                {
+                    "id": "100002",
+                    "name": "费用支出",
+                    "url": "index_v1.html"
+                },{
+                    "id": "100003",
+                    "name": "支出类型",
+                    "url": "index_v2.html"
+                },{
+                    "id": "100003",
+                    "name": "我的费用支出",
+                    "url": "index_v2.html"
+                },{
+                    "id": "100003",
+                    "name": "我的支出类型",
+                    "url": "index_v2.html"
+                }
+            ]
+        }]
+    },{
+        "id": "7",
+        "name": "流程模块",
+        "image": "glyphicon-user",
+        "list": [{
+            "id": "20001",
+            "name": "数据选项",
+            "pid": "2",
+            "url": "/role"
+        }, {
+            "id": "20002",
+            "name": "流程模块列表",
+            "pid": "2",
+            "url": "/user"
+        }, {
+            "id": "20002",
+            "name": "流程审核步骤",
+            "pid": "2",
+            "url": "/user"
+        }, {
+            "id": "20002",
+            "name": "表单元素管理",
+            "pid": "2",
+            "url": "/user"
+        }, {
+            "id": "20002",
+            "name": "流程模块权限",
+            "pid": "2",
+            "url": "/user"
+        }, {
+            "id": "20002",
+            "name": "流程单据查看",
+            "pid": "2",
+            "url": "/user"
+        }, {
+            "id": "20002",
+            "name": "单据操作菜单",
+            "pid": "2",
+            "url": "/user"
+        }, {
+            "id": "20002",
+            "name": "流程模块条件",
+            "pid": "2",
+            "url": "/user"
+        }, {
+            "id": "20002",
+            "name": "单据通知设置",
+            "pid": "2",
+            "url": "/user"
+        }]
+    },{
+        "id": "8",
+        "name": "系统",
+        "image": "glyphicon-user",
+        "list": [{
+            "id": "20001",
+            "name": "组织结构",
+            "pid": "2",
+            "url": "/role"
+        }, {
+            "id": "20002",
+            "name": "用户管理",
+            "pid": "2",
+            "url": "/user"
+        }, {
+            "id": "20002",
+            "name": "组管理",
+            "pid": "2",
+            "url": "/user"
+        }, {
+            "id": "20002",
+            "name": "菜单管理",
+            "pid": "2",
+            "url": "/user"
+        }, {
+            "id": "20002",
+            "name": "邮件管理",
+            "pid": "2",
+            "url": "/user",
+            "list": [
+                {
+                    "id": "100002",
+                    "name": "邮件收发设置",
+                    "url": "index_v1.html"
+                },{
+                    "id": "100003",
+                    "name": "用户邮件设置",
+                    "url": "index_v2.html"
+                }
+            ]
+        }, {
+            "id": "20002",
+            "name": "权限管理",
+            "pid": "2",
+            "url": "/user",
+            "list": [
+                {
+                    "id": "100002",
+                    "name": "人员→菜单",
+                    "url": "index_v1.html"
+                },{
+                    "id": "100003",
+                    "name": "菜单→人员",
+                    "url": "index_v2.html"
+                },{
+                    "id": "100003",
+                    "name": "组→菜单",
+                    "url": "index_v2.html"
+                },{
+                    "id": "100003",
+                    "name": "菜单→组",
+                    "url": "index_v2.html"
+                },{
+                    "id": "100003",
+                    "name": "人员权限查看",
+                    "url": "index_v2.html"
+                }
+            ]
+        }, {
+            "id": "20002",
+            "name": "系统工具",
+            "pid": "2",
+            "url": "/user",
+            "list": [
+                {
+                    "id": "100002",
+                    "name": "系统设置",
+                    "url": "index_v1.html"
+                },{
+                    "id": "100003",
+                    "name": "系统信息",
+                    "url": "index_v2.html"
+                },{
+                    "id": "100003",
+                    "name": "数据库表",
+                    "url": "index_v2.html"
+                },{
+                    "id": "100003",
+                    "name": "初始化备份",
+                    "url": "index_v2.html"
+                },{
+                    "id": "100003",
+                    "name": "计划任务",
+                    "url": "index_v2.html"
+                },{
+                    "id": "100003",
+                    "name": "上传文件管理",
+                    "url": "index_v2.html"
+                },{
+                    "id": "100003",
+                    "name": "日志查看",
+                    "url": "index_v2.html"
+                }
+            ]
+        }, {
+            "id": "20002",
+            "name": "微信企业号",
+            "pid": "2",
+            "url": "/user",
+            "list": [
+                {
+                    "id": "100002",
+                    "name": "微信设置",
+                    "url": "index_v1.html"
+                },{
+                    "id": "100003",
+                    "name": "微信部门",
+                    "url": "index_v2.html"
+                },{
+                    "id": "100003",
+                    "name": "微信用户",
+                    "url": "index_v2.html"
+                },{
+                    "id": "100003",
+                    "name": "应用设置",
+                    "url": "index_v2.html"
+                },{
+                    "id": "100003",
+                    "name": "回话IM",
+                    "url": "index_v2.html"
+                }
+            ]
+        }]
+    }],
+    "total": 8
+}

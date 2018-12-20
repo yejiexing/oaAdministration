@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html ng-app="sysUser">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title></title>
+
+    <link href="../../css/bootstrap.min.css?t=20180413" rel="stylesheet">
+    <link href="../../css/bootstrap-editable.css?t=20180413" rel="stylesheet">
+    <link href="../../css/font-awesome.min.css?t=20180413" rel="stylesheet">
+    <link href="../../css/plugins/bootstrap-table/bootstrap-table.min.css?t=20180413" rel="stylesheet">
+    <link href="../../css/plugins/iCheck/custom.css?t=20180413" rel="stylesheet">
+    <link href="../../css/animate.min.css?t=20180413" rel="stylesheet">
+    <link href="../../css/style.min.css?t=20180413" rel="stylesheet">
+
+    <!--<link href="../../css/plugins/datapicker/datepicker3.css" rel="stylesheet">-->
+
+    <base target="_blank">
+    <style>
+        .bg-color{
+            background: rgb(223, 240, 216) !important;
+        }
+        .modal-body{
+            max-height: 300px;
+            min-height: 300px;
+            overflow-x: hidden
+        }
+        .form-horizontal .form-group{
+            margin-bottom: 8px;
+        }
+        .form-horizontal .control-label,.form-group>div{
+            padding-left: 0;
+            padding-right: 0;
+        }
+        .datepicker.dropdown-menu{
+            z-index: 10000 !important;
+        }
+        /*.ibox-content{*/
+            /*height: 766px;*/
+        /*}*/
+        .table-div{
+            width: 96%;
+            margin-left: 2%;
+            height: 40px;
+            line-height: 40px;
+            border-bottom: 1px solid #e5e6e7;
+            overflow: hidden;
+        }
+        .table-div span{
+            /*display: inline-block;*/
+            float: left;
+            cursor: pointer;
+        }
+        .table-div span:nth-child(1){
+            width: 20%;
+        }
+        .table-div span:nth-child(2){
+            width: 36%;
+            overflow: hidden;
+            text-overflow:ellipsis;
+            white-space: nowrap;
+        }
+        .table-div span:nth-child(3){
+            /*width: 40%;*/
+        }
+        .table-div i{
+            /*margin-left: -12px;*/
+            margin-right: 4px;
+        }
+        .modal-body h1 {
+            text-align: center;
+            margin-top: -5px;
+            font-size: 20px;
+        }
+
+        .modal-body table {
+            margin: 0 auto;
+        }
+
+        .modal-body tr td {
+            padding: 8px;
+        }
+
+        .modal-body tr td:nth-child(1) {
+            text-align: right;
+        }
+        .text_demand{
+            resize: none;
+            width: 100%;
+            height: 80px;
+        }
+    </style>
+
+</head>
+
+<body class="gray-bg" ng-controller="sysUserCtrl">
+<div class="wrapper wrapper-content animated fadeInRight" >
+    <!-- Panel Other -->
+    <div class="ibox float-e-margins">
+        <div class="ibox-title">
+            <h5>用户列表</h5>
+            <div class="ibox-tools">
+                <a class="collapse-link">
+                    <i class="fa fa-chevron-up"></i>
+                </a>
+            </div>
+        </div>
+        <div class="ibox-content">
+            <div class="base-margin" id="query">
+                <form class="form-inline" role="form" method="post" id="queryForm" style="padding: 0 15px">
+                    <div class="form-group">
+                        <button class="btn btn-white pull-left" type="button" ng-click="NewlyAdded()" ng-if="save"><i class="fa fa-plus"></i> 添加用户</button>
+                        <div class="input-group select_input" ng-if="index">
+                            <input type="text" class="form-control input-s" name="search" placeholder="搜索用户名 姓名" ng-model="search.name">
+                        </div>
+                        <div class="select_input" ng-if="index">
+                            <select class="form-control" ng-model="search.structure_id" style="width: 100%">
+                                <option value="">-选择部门-</option>
+                                <option ng-repeat="item in structurelList track by $index" value="{{item.id}}" title="{{item.title}}">{{item.title}}</option>
+                            </select>
+                        </div>
+                        <div class="select_input" ng-if="index">
+                            <select class="form-control" ng-model="search.role_id" style="width: 100%">
+                                <option value="">-选择角色-</option>
+                                <option ng-repeat="item in roleList track by $index" value="{{item.id}}" title="{{item.title}}">{{item.title}}</option>
+                            </select>
+                        </div>
+                        <button type="button" class="btn btn-s btn-success ml10" ng-click="searchFun()" ng-if="index"><i class="fa fa-search"></i> 搜索</button>
+
+                    </div>
+
+                    <div class="form-group pull-right">
+                        <button class="btn btn-white" type="button" ng-click="doQuery()"><i class="fa fa-refresh"></i> 刷新</button>
+                        <button class="btn btn-danger" type="button" ng-disabled="!deleteState" ng-click="deleteFun()" ng-if="delete"><i class="fa fa-trash-o"></i> 删除</button>
+                        <button class="btn btn-white" type="button" ng-disabled="!editState" ng-click="editFun(1)" ng-if="read"><i class="fa fa-newspaper-o"></i> 详情</button>
+                        <button class="btn btn-white" type="button" ng-disabled="!editState" ng-click="editFun()" ng-if="update"><i class="fa fa-edit"></i> 编辑</button>
+                    </div>
+                </form>
+            </div>
+            <div class="container" style="width: 100%">
+                <table id="demo-table">
+                    <thead>
+                    <tr ng-click="tab()">
+                        <!--<th data-field="avatar">头像</th>-->
+                        <th data-field="username">用户名</th>
+                        <th data-field="realname" data-sortable="true">姓名</th>
+                        <th data-field="structure" data-sortable="true">部门</th>
+                        <th data-field="group">角色</th>
+                        <th data-field="p_name">上级主管</th>
+                        <th data-field="position" data-formatter="positionData" data-events="positionEvents">职位</th>
+                        <th data-field="status" data-formatter="statusData" data-events="statusEvents" data-sortable="true">状态</th>
+                        <th data-field="is_admin" data-formatter="is_adminData" data-events="is_adminEvents" data-sortable="true">管理员</th>
+                        <th data-field="login_time">登录次数</th>
+                        <th data-field="sex">性别</th>
+                        <th data-field="email">邮箱</th>
+                        <!--<th data-field="work_date" data-sortable="true">入职</th>-->
+                        <!--<th data-field="avatar" data-sortable="true">排序号</th>-->
+                        <th data-field="id">ID</th>
+                        <th data-field="openid">OpenId</th>
+                    </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="modal inmodal" id="table_delete" data-backdrop="static" tabindex="-1" role="dialog" aria-hidden="false">
+        <div ng-include="'../deletealert.html'"></div>
+    </div>
+    <div class="modal inmodal" id="table_success" data-backdrop="static" tabindex="-1" role="dialog" aria-hidden="false">
+        <div ng-include="'../success.html'"></div>
+    </div>
+    </div>
+    <!--添加修改弹出层-->
+    <div class="modal fade" id="preservaModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="myModalLabel"></h4>
+                </div>
+                <div class="modal-body">
+                    <form method="get" class="form-horizontal">
+                        <div class="form-group">
+                            <label class="col-sm-2 col-md-2 control-label text-right"><span class="text-danger">*</span>姓名：</label>
+                            <div class="col-sm-10 col-md-4">
+                                <input type="text" class="form-control" ng-model="copyuserArr.realname">
+                            </div>
+                            <label class="col-sm-2 col-md-2 control-label text-right">编号：</label>
+                            <div class="col-sm-10 col-md-4">
+                                <input type="text" class="form-control" placeholder="唯一编号/工号" ng-model="copyuserArr.work_number">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 col-md-2 control-label text-right"><span class="text-danger">*</span>用户名：</label>
+                            <div class="col-sm-10 col-md-4">
+                                <input type="text" class="form-control" placeholder="字母+数字" ng-model="copyuserArr.username">
+                            </div>
+                            <label class="col-sm-2 col-md-2 control-label text-right"><span class="text-danger">*</span>角色：</label>
+                            <div class="col-sm-10 col-md-4">
+                                <select class="form-control" ng-model="copyuserArr.group_id">
+                                    <option value="">-请选择-</option>
+                                    <option value="{{item.id}}" ng-repeat="item in ChannelList track by $index">{{item.title}}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+
+                            <label class="col-sm-2 col-md-2 control-label text-right">性别：</label>
+                            <div class="col-sm-10 col-md-4">
+                                <select class="form-control" ng-model="copyuserArr.sex">
+                                    <option value="0">男</option>
+                                    <option value="1">女</option>
+                                </select>
+                            </div>
+                            <label class="col-sm-2 col-md-2 control-label text-right">OpenId：</label>
+                            <div class="col-sm-10 col-md-4">
+                                <input type="text" class="form-control" placeholder="OpenId" ng-model="copyuserArr.openid">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 col-md-2 control-label text-right"><span class="text-danger">*</span>部门：</label>
+                            <div class="col-sm-10 col-md-4">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" ng-model="copyuserArr.structure" disabled><span class="input-group-addon" ng-click="newstrucFun()"><i class="fa fa-search"></i></span>
+                                </div>
+                            </div>
+                            <label class="col-sm-2 col-md-2 control-label text-right"><span class="text-danger">*</span>职位：</label>
+                            <div class="col-sm-10 col-md-4">
+                                <input type="text" class="form-control" placeholder="" ng-model="copyuserArr.position">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 col-md-2 control-label text-right">上级主管：</label>
+                            <div class="col-sm-10 col-md-4">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" ng-model="copyuserArr.p_name" disabled>
+                                    <span class="input-group-addon" ng-click="delp_name()"><i class="fa fa-close"></i></span>
+                                    <span class="input-group-addon" ng-click="charges()"><i class="fa fa-search"></i></span>
+                                </div>
+                            </div>
+                            <label class="col-sm-2 col-md-2 control-label text-right">入职日期：</label>
+                            <div class="col-sm-10 col-md-4">
+                                <div class="input-group">
+                                    <input type="text" class="form-control demo-input" ng-model="copyuserArr.work_date" id="date1" disabled>
+                                    <span class="input-group-addon dateclick"><i class="fa fa-calendar dateicon" id="date_1"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-offset-2 col-sm-10">
+                                <div class="checkbox i-checks" id="cheStatusDiv">
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 col-md-2 control-label text-right"><span class="text-danger">*</span>邮件：</label>
+                            <div class="col-sm-10 col-md-4">
+                                <input type="email" class="form-control" ng-model="copyuserArr.email">
+                            </div>
+                            <label class="col-sm-2 col-md-2 control-label text-right">电话：</label>
+                            <div class="col-sm-10 col-md-4">
+                                <input type="text" class="form-control" ng-model="copyuserArr.telephone">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 col-md-2 control-label text-right">排序号：</label>
+                            <div class="col-sm-10 col-md-4">
+                                <input type="number" class="form-control" ng-model="copyuserArr.sort">
+                            </div>
+                            <label class="col-sm-2 col-md-2 control-label text-right">手机号：</label>
+                            <div class="col-sm-10 col-md-4">
+                                <input type="text" class="form-control" ng-model="copyuserArr.phone" maxlength="11">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 col-md-2 control-label text-right">微信号：</label>
+                            <div class="col-sm-10 col-md-4">
+                                <input type="text" class="form-control" placeholder="手机号不能作为微信号" ng-model="copyuserArr.wechat">
+                            </div>
+                            <label class="col-sm-2 col-md-2 control-label text-right">姓名拼音：</label>
+                            <div class="col-sm-10 col-md-4">
+                                <input type="text" class="form-control" placeholder="拼音全拼(方便人员搜索)" ng-model="copyuserArr.spell_name">
+                            </div>
+                        </div>
+                        <div class="form-group" ng-if="pass">
+                            <label class="col-sm-2 col-md-2 control-label text-right">密码：</label>
+                            <div class="col-sm-10 col-md-4">
+                            <input type="text" class="form-control" ng-model="copyuserArr.password">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 col-md-2 control-label text-right">备注：</label>
+                            <div class="col-sm-10 col-md-10">
+                                <!--<input type="text" class="form-control" ng-model="copyimageArr.demand_detail">-->
+                                <textarea ng-model="copyuserArr.deal_description" class="text_demand"></textarea>
+                                <!--<span class="text-span">还可输入<b class="text-danger">{{textareaNum}}</b>字</span>-->
+                            </div>
+                            <!--</div>-->
+                        </div>
+                        <div class="row" ng-if="rulesState && getrulelist">
+                            <label class="col-sm-2 col-md-2 control-label text-right">权限：</label>
+                            <div class="col-sm-4 col-md-4" style="margin-top: 7px;">
+                                <a ng-click="rulesFun()">添加权限</a>
+                            </div>
+                        </div>
+                        <div class="row" ng-if="!rulesState && getrulelist" style="overflow-x: auto;height: 330px;">
+                            <hr/>
+                            <div ng-include="'../Jurisdiction.html'"></div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <span class="text-danger" ng-bind="usersError"></span>&nbsp;&nbsp;
+                    <button type="button" class="btn btn-success" ng-disabled="copyuserArr.username == null || copyuserArr.username == '' || copyuserArr.realname == null || copyuserArr.realname == '' || copyuserArr.position == null || copyuserArr.position == '' || copyuserArr.structure_id == null || copyuserArr.structure_id    == '' || copyuserArr.group_id == null || copyuserArr.group_id  == '' || copyuserArr.email  == ''" ng-click="preservaConfirm()">保存</button>
+                    <!--<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>-->
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--部门选中弹出窗-->
+    <div class="modal fade" id="departmentModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div ng-include="'../structure.html'"></div>
+    </div>
+
+    <!--上级主管选中弹出窗-->
+    <div class="modal fade" id="charge" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div ng-include="'../charge.html'"></div>
+    </div>
+<div class="modal fade" id="details" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                    <span class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title">用户管理</h4>
+            </div>
+            <div class="modal-body" style="max-height: 600px">
+                <div class="dropdown">
+                    <a class="dropdown-toggle" id="showmenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                        操作V
+                        <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="showmenu">
+                        <li>
+                            <a href="#" ng-click="printAll()">打印全部...</a>
+                        </li>
+                        <li>
+                            <a href="#" ng-click="printContent()">只打印内容...</a>
+                        </li>
+                        <li>
+                            <a href="#" ng-click="wordExport()">另存为word...</a>
+                        </li>
+                        <li>
+                            <a href="#" ng-click="hideModal()">关闭</a>
+                        </li>
+                        <li>
+                            <a href="#" ng-click="editFun(1)">刷新</a>
+                        </li>
+                    </ul>
+                </div>
+                <h1>用户管理</h1>
+                <table id="detail" border="1" width="90%">
+                    <tbody>
+                    <tr>
+                        <td width="30%">用户名</td>
+                        <td width="70%">{{copyuserArr.username}}</td>
+                    </tr>
+                    <tr>
+                        <td>姓名</td>
+                        <td>{{copyuserArr.realname}}</td>
+                    </tr>
+                    <tr>
+                        <td>登录次数</td>
+                        <td>{{copyuserArr.login_times}}</td>
+                    </tr>
+                    <tr>
+                        <td>性别</td>
+                        <td>{{copyuserArr.sex}}</td>
+                    </tr>
+                    <tr>
+                        <td>座机</td>
+                        <td>{{copyuserArr.telephone}}</td>
+                    </tr>
+                    <tr>
+                        <td>上级名称</td>
+                        <td>{{copyuserArr.p_name}}</td>
+                    </tr>
+                    <tr>
+                        <td>部门</td>
+                        <td>{{copyuserArr.structure}}</td>
+                    </tr>
+                    <tr>
+                        <td>手机号码</td>
+                        <td>{{copyuserArr.mobile}}</td>
+                    </tr>
+                    <tr>
+                        <td>入职日期</td>
+                        <td>{{copyuserArr.work_date}}</td>
+                    </tr>
+                    <tr>
+                        <td>邮箱</td>
+                        <td>{{copyuserArr.email}}</td>
+                    </tr>
+                    <tr>
+                        <td>微信号</td>
+                        <td>{{copyuserArr.wechat}}</td>
+                    </tr>
+                    <tr>
+                        <td>姓名拼音</td>
+                        <td>{{copyuserArr.spell_name}}</td>
+                    </tr>
+                    <tr>
+                        <td>角色</td>
+                        <td>{{copyuserArr.group}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="ibox float-e-margins" id="deal-list">
+                    <div class="ibox-title" style="border: none">
+                        <h5>处理记录({{ copyuserArr.dealList.length || 0 }})</h5>
+                        <div class="ibox-tools">
+                            <a class="collapse-link">
+                                <i class="fa fa-chevron-down"></i>
+                            </a>
+                            <a class="close-link">
+                                <i class="fa fa-times"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="ibox-content" style="display: none">
+                        <div ng-include="'/page/dealalert.html'"></div>
+                    </div>
+                </div>
+                <div class="ibox float-e-margins" id="access-list">
+                    <div class="ibox-title" style="border: none">
+                        <h5>查阅记录</h5>
+                        <div class="ibox-tools">
+                            <a class="close-link">
+                                <i class="fa fa-times"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="ibox-content">
+                        <div class="row">
+                            <div class="col-md-2" ng-repeat="user in copyuserArr.accessList">
+                                <div class="thumbnail text-center">
+                                    <div class="caption" style="padding: 9px 0 0 0">
+                                        <small>{{ user.access_username }}</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <div class="popover fade top in editable-container editable-popup" role="tooltip" id="popoverstate">
+        <div class="arrow" style="left: 21.5686%;"></div>
+        <h3 class="popover-title">状态
+            <div class="editable-buttons pull-right" style="margin-top: -3px;">
+                <button type="submit" class="btn btn-primary btn-xs editable-submit" ng-click="stateedit()">
+                    <i class="glyphicon glyphicon-ok"></i>
+                </button>
+                <button type="button" class="btn btn-default btn-xs editable-cancel" ng-click="statedelete()">
+                    <i class="glyphicon glyphicon-remove"></i>
+                </button>
+            </div>
+        </h3>
+        <div class="popover-content"> <div>
+            <div class="editableform-loading" style="display: none;"></div>
+            <form class="form-inline editableform" style="">
+                <div class="control-group form-group">
+                    <div>
+                        <div class="editable-input">
+                            <div class="editable-checklist">
+                                <div>
+                                    <label><input id="pop_che" type="checkbox" value="1"><span> 状态</span></label>
+                                </div>
+                                <div>
+                                    <!--<label>：</label>-->
+                                    <!--<input type="text" class="form-control" id="pop_input">-->
+                                    <textarea class="text_demand" id="pop_input" style="height: 60px" placeholder="备注"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="editable-error-block help-block" style="display: none;">
+                    </div>
+                </div>
+            </form>
+        </div>
+        </div>
+    </div>
+    <!-- End Panel Other -->
+    <!--<a href="#" id="country" data-type="checklist" data-title="Input country" data-source="[{ value: '1', text: '开启' },{ value: '0', text: '关闭' }]" data-value="0"><i class="fa fa-square-o"></i></a>-->
+<div>
+</div>
+<script src="../../js/jquery.min.js?t=20180413"></script>
+<script src="../../js/bootstrap.min.js?t=20180413"></script>
+<script src="../../js/bootstrap-editable.min.js?t=20180413"></script><!--表格行内编辑插件-->
+<script src="../../js/content.min.js?t=20180413"></script>
+<script src="../../js/plugins/bootstrap-table/bootstrap-table.min.js?t=20180413"></script>
+<script src="../../js/plugins/bootstrap-table/bootstrap-table-mobile.min.js?t=20180413"></script>
+<script src="../../js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js?t=20180413"></script>
+<script src="../../js/plugins/angular/angular.min.js?t=20180413"></script>
+<script src="../../js/controller/sysyem/sys_user.js?t=20180319"></script>
+<script src="../../js/plugins/iCheck/icheck.min.js?t=20180413"></script>
+<!--日历插件-->
+<script src="../../js/plugins/laydate/laydate.js?t=20180413"></script>
+</body>
+
+</html>
